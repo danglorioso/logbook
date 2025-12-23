@@ -5,7 +5,6 @@ import { useUser, useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Plane, LogOut } from "lucide-react";
 import { AddFlightDialog } from "@/components/AddFlightDialog";
 import { FlightCard } from "@/components/FlightCard";
@@ -47,6 +46,7 @@ export default function ProfilePage() {
   const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [editingFlight, setEditingFlight] = useState<Flight | null>(null);
 
   useEffect(() => {
     if (userLoaded && user) {
@@ -76,10 +76,23 @@ export default function ProfilePage() {
   const handleFlightAdded = () => {
     fetchFlights();
     setOpen(false);
+    setEditingFlight(null);
   };
 
   const handleFlightDeleted = (flightId: string) => {
     setFlights(flights.filter((f) => f.id !== flightId));
+  };
+
+  const handleEditFlight = (flight: Flight) => {
+    setEditingFlight(flight);
+    setOpen(true);
+  };
+
+  const handleDialogOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (!isOpen) {
+      setEditingFlight(null);
+    }
   };
 
   if (!userLoaded || loading) {
@@ -117,7 +130,11 @@ export default function ProfilePage() {
             <span className="text-xl font-semibold">Logbook</span>
           </Link>
           <div className="flex items-center gap-4">
-            <Button variant="ghost" onClick={handleLogout}>
+            <Button 
+              variant="outline" 
+              onClick={handleLogout}
+              className="border-white/30 text-white hover:bg-white/10"
+            >
               <LogOut className="h-4 w-4 mr-2" />
               Sign Out
             </Button>
@@ -165,7 +182,13 @@ export default function ProfilePage() {
         {/* Flights Section */}
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-2xl font-bold">Your Flights</h2>
-          <Button onClick={() => setOpen(true)}>
+          <Button 
+            onClick={() => {
+              setEditingFlight(null);
+              setOpen(true);
+            }}
+            className="bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg"
+          >
             <Plus className="h-4 w-4 mr-2" />
             Add Flight
           </Button>
@@ -175,7 +198,13 @@ export default function ProfilePage() {
           <Card className="bg-[#0a0a0a] border-white/10">
             <CardContent className="py-12 text-center">
               <p className="text-white/60 mb-4">No flights logged yet.</p>
-              <Button onClick={() => setOpen(true)}>
+              <Button 
+                onClick={() => {
+                  setEditingFlight(null);
+                  setOpen(true);
+                }}
+                className="bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg"
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Your First Flight
               </Button>
@@ -188,12 +217,18 @@ export default function ProfilePage() {
                 key={flight.id}
                 flight={flight}
                 onDelete={handleFlightDeleted}
+                onEdit={handleEditFlight}
               />
             ))}
           </div>
         )}
 
-        <AddFlightDialog open={open} onOpenChange={setOpen} onSuccess={handleFlightAdded} />
+        <AddFlightDialog 
+          open={open} 
+          onOpenChange={handleDialogOpenChange} 
+          onSuccess={handleFlightAdded}
+          flight={editingFlight}
+        />
       </div>
     </div>
   );

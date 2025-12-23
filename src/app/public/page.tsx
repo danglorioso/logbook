@@ -71,10 +71,14 @@ export default function PublicFlightsPage() {
           </Link>
           <div className="flex items-center gap-4">
             <Link href="/login">
-              <Button variant="ghost">Sign In</Button>
+              <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
+                Sign In
+              </Button>
             </Link>
             <Link href="/register">
-              <Button>Get Started</Button>
+              <Button className="bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg">
+                Get Started
+              </Button>
             </Link>
           </div>
         </div>

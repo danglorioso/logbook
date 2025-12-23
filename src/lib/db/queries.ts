@@ -117,6 +117,54 @@ export async function createFlight(userId: string, flightData: Partial<Flight>):
   return result[0] as Flight;
 }
 
+export async function updateFlight(
+  flightId: string,
+  userId: string,
+  flightData: Partial<Flight>
+): Promise<Flight | null> {
+  const result = await sql`
+    UPDATE flights
+    SET
+      date = ${flightData.date},
+      aircraft = ${flightData.aircraft || null},
+      callsign = ${flightData.callsign || null},
+      departure = ${flightData.departure || null},
+      arrival = ${flightData.arrival || null},
+      cruise_altitude = ${flightData.cruiseAltitude || null},
+      block_fuel = ${flightData.blockFuel || null},
+      route = ${flightData.route || null},
+      takeoff_runway = ${flightData.takeoffRunway || null},
+      sid = ${flightData.sid || null},
+      v1 = ${flightData.v1 || null},
+      vr = ${flightData.vr || null},
+      v2 = ${flightData.v2 || null},
+      toga = ${flightData.toga || false},
+      flaps = ${flightData.flaps || null},
+      landing_runway = ${flightData.landingRunway || null},
+      star = ${flightData.star || null},
+      brake = ${flightData.brake || null},
+      vapp = ${flightData.vapp || null},
+      total_duration = ${flightData.totalDuration || null},
+      land_rate = ${flightData.landRate || null},
+      time_of_day = ${flightData.timeOfDay || null},
+      passengers = ${flightData.passengers || null},
+      cargo = ${flightData.cargo || null},
+      is_public = ${flightData.isPublic || false},
+      updated_at = NOW()
+    WHERE id = ${flightId} AND user_id = ${userId}
+    RETURNING 
+      id, user_id as "userId", date,
+      aircraft, callsign, departure, arrival, cruise_altitude as "cruiseAltitude",
+      block_fuel as "blockFuel", route,
+      takeoff_runway as "takeoffRunway", sid, v1, vr, v2, toga, flaps,
+      landing_runway as "landingRunway", star, brake, vapp,
+      total_duration as "totalDuration", land_rate as "landRate",
+      time_of_day as "timeOfDay", passengers, cargo,
+      is_public as "isPublic", created_at as "createdAt", updated_at as "updatedAt"
+  `;
+  return result[0] as Flight | null;
+}
+
 export async function deleteFlight(flightId: string, userId: string): Promise<boolean> {
   const result = await sql`
     DELETE FROM flights

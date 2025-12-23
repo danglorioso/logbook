@@ -14,10 +14,14 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-4">
             <Link href="/login">
-              <Button variant="ghost">Sign In</Button>
+              <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
+                Sign In
+              </Button>
             </Link>
             <Link href="/register">
-              <Button className="bg-white text-black font-semibold">Get Started</Button>
+              <Button className="bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg">
+                Get Started
+              </Button>
             </Link>
           </div>
         </div>
@@ -44,7 +48,11 @@ export default function Home() {
               </Button>
             </Link>
             <Link href="/public">
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="text-lg px-8 py-6 border-white/30 text-white hover:bg-white/10"
+              >
                 View Public Flights
               </Button>
             </Link>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -47,14 +48,52 @@ const flightSchema = z.object({
 
 type FlightFormData = z.infer<typeof flightSchema>;
 
+interface Flight {
+  id: string;
+  date: string;
+  aircraft: string | null;
+  callsign: string | null;
+  departure: string | null;
+  arrival: string | null;
+  cruiseAltitude: string | null;
+  blockFuel: number | null;
+  route: string | null;
+  takeoffRunway: string | null;
+  sid: string | null;
+  v1: string | null;
+  vr: string | null;
+  v2: string | null;
+  toga: boolean;
+  flaps: string | null;
+  landingRunway: string | null;
+  star: string | null;
+  brake: "LOW" | "MED" | null;
+  vapp: string | null;
+  totalDuration: string | null;
+  landRate: number | null;
+  timeOfDay: "MORNING" | "MID-DAY" | "EVENING" | "NIGHT" | null;
+  passengers: number | null;
+  cargo: number | null;
+  isPublic: boolean;
+}
+
 interface AddFlightDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
+  flight?: Flight | null;
 }
 
-export function AddFlightDialog({ open, onOpenChange, onSuccess }: AddFlightDialogProps) {
+export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFlightDialogProps) {
   const [loading, setLoading] = useState(false);
+  const isEditing = !!flight;
+  
+  // Format date for input field (YYYY-MM-DD)
+  const formatDateForInput = (date: string | Date) => {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    return d.toISOString().split('T')[0];
+  };
+
   const {
     register,
     handleSubmit,
@@ -64,7 +103,33 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess }: AddFlightDial
     setValue,
   } = useForm<FlightFormData>({
     resolver: zodResolver(flightSchema),
-    defaultValues: {
+    defaultValues: flight ? {
+      date: formatDateForInput(flight.date),
+      aircraft: flight.aircraft || "",
+      callsign: flight.callsign || "",
+      departure: flight.departure || "",
+      arrival: flight.arrival || "",
+      cruiseAltitude: flight.cruiseAltitude || "",
+      blockFuel: flight.blockFuel || undefined,
+      route: flight.route || "",
+      takeoffRunway: flight.takeoffRunway || "",
+      sid: flight.sid || "",
+      v1: flight.v1 || "",
+      vr: flight.vr || "",
+      v2: flight.v2 || "",
+      toga: flight.toga || false,
+      flaps: flight.flaps || "",
+      landingRunway: flight.landingRunway || "",
+      star: flight.star || "",
+      brake: flight.brake || undefined,
+      vapp: flight.vapp || "",
+      totalDuration: flight.totalDuration || "",
+      landRate: flight.landRate || undefined,
+      timeOfDay: flight.timeOfDay || undefined,
+      passengers: flight.passengers || undefined,
+      cargo: flight.cargo || undefined,
+      isPublic: flight.isPublic || false,
+    } : {
       toga: false,
       isPublic: false,
     },
@@ -78,8 +143,11 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess }: AddFlightDial
   const onSubmit = async (data: FlightFormData) => {
     setLoading(true);
     try {
-      const response = await fetch("/api/flights", {
-        method: "POST",
+      const url = isEditing ? `/api/flights/${flight.id}` : "/api/flights";
+      const method = isEditing ? "PUT" : "POST";
+      
+      const response = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
@@ -88,22 +156,64 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess }: AddFlightDial
         reset();
         onSuccess();
       } else {
-        alert("Failed to create flight. Please try again.");
+        alert(`Failed to ${isEditing ? "update" : "create"} flight. Please try again.`);
       }
     } catch (error) {
-      alert("Failed to create flight. Please try again.");
+      alert(`Failed to ${isEditing ? "update" : "create"} flight. Please try again.`);
     } finally {
       setLoading(false);
     }
   };
 
+  // Reset form when dialog opens/closes or flight changes
+  React.useEffect(() => {
+    if (open && flight) {
+      reset({
+        date: formatDateForInput(flight.date),
+        aircraft: flight.aircraft || "",
+        callsign: flight.callsign || "",
+        departure: flight.departure || "",
+        arrival: flight.arrival || "",
+        cruiseAltitude: flight.cruiseAltitude || "",
+        blockFuel: flight.blockFuel || undefined,
+        route: flight.route || "",
+        takeoffRunway: flight.takeoffRunway || "",
+        sid: flight.sid || "",
+        v1: flight.v1 || "",
+        vr: flight.vr || "",
+        v2: flight.v2 || "",
+        toga: flight.toga || false,
+        flaps: flight.flaps || "",
+        landingRunway: flight.landingRunway || "",
+        star: flight.star || "",
+        brake: flight.brake || undefined,
+        vapp: flight.vapp || "",
+        totalDuration: flight.totalDuration || "",
+        landRate: flight.landRate || undefined,
+        timeOfDay: flight.timeOfDay || undefined,
+        passengers: flight.passengers || undefined,
+        cargo: flight.cargo || undefined,
+        isPublic: flight.isPublic || false,
+      });
+    } else if (open && !flight) {
+      reset({
+        toga: false,
+        isPublic: false,
+      });
+    }
+  }, [open, flight?.id, reset]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-[#0a0a0a] border-white/10 text-white">
         <DialogHeader>
-          <DialogTitle className="text-2xl">Add New Flight</DialogTitle>
+          <DialogTitle className="text-2xl">
+            {isEditing ? "Edit Flight" : "Add New Flight"}
+          </DialogTitle>
           <DialogDescription className="text-white/60">
-            Log all the details of your flight simulator session
+            {isEditing 
+              ? "Update the details of your flight" 
+              : "Log all the details of your flight simulator session"}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -391,11 +501,16 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess }: AddFlightDial
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              className="border-white/30 text-white hover:bg-white/10"
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? "Saving..." : "Save Flight"}
+            <Button 
+              type="submit" 
+              disabled={loading}
+              className="bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg disabled:opacity-50"
+            >
+              {loading ? "Saving..." : isEditing ? "Update Flight" : "Save Flight"}
             </Button>
           </div>
         </form>

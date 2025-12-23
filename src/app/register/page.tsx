@@ -189,13 +189,17 @@ export default function RegisterPage() {
                 {error && (
                   <p className="text-sm text-red-400">{error}</p>
                 )}
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button 
+                  type="submit" 
+                  className="w-full bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg disabled:opacity-50" 
+                  disabled={loading}
+                >
                   {loading ? "Verifying..." : "Verify Code"}
                 </Button>
                 <Button
                   type="button"
-                  variant="ghost"
-                  className="w-full"
+                  variant="outline"
+                  className="w-full border-white/30 text-white hover:bg-white/10"
                   onClick={() => setVerifying(false)}
                 >
                   Back
@@ -253,7 +257,11 @@ export default function RegisterPage() {
               )}
               {/* Clerk CAPTCHA element */}
               <div id="clerk-captcha" className="flex justify-center my-4"></div>
-              <Button type="submit" className="w-full bg-white text-black" disabled={loading || !isLoaded}>
+              <Button 
+                type="submit" 
+                className="w-full bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg disabled:opacity-50" 
+                disabled={loading || !isLoaded}
+              >
                 {loading ? "Sending..." : "Send Verification Code"}
               </Button>
             </form>
