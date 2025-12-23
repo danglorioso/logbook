@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plane } from "lucide-react";
 import { format } from "date-fns";
+import { AnimatedPlane } from "@/components/AnimatedPlane";
 
 interface PublicFlight {
   id: string;
@@ -68,8 +68,8 @@ export default function PublicFlightsPage() {
       {/* Navigation */}
       <nav className="border-b border-white/10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Plane className="h-6 w-6" />
+          <Link href="/" className="flex items-center gap-2 group">
+            <AnimatedPlane size="sm" />
             <span className="text-xl font-semibold">Logbook</span>
           </Link>
           <div className="flex items-center gap-4">

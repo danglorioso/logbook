@@ -5,10 +5,11 @@ import { useUser, useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Plane, LogOut } from "lucide-react";
+import { Plus, LogOut } from "lucide-react";
 import { AddFlightDialog } from "@/components/AddFlightDialog";
 import { FlightCard } from "@/components/FlightCard";
 import Link from "next/link";
+import { AnimatedPlane } from "@/components/AnimatedPlane";
 
 interface Flight {
   id: string;
@@ -131,8 +132,8 @@ export default function ProfilePage() {
       {/* Navigation */}
       <nav className="border-b border-white/10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Plane className="h-6 w-6" />
+          <Link href="/" className="flex items-center gap-2 group">
+            <AnimatedPlane size="sm" />
             <span className="text-xl font-semibold">Logbook</span>
           </Link>
           <div className="flex items-center gap-4">

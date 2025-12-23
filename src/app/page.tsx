@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Plane, MapPin, BarChart3, Users } from "lucide-react";
+import { MapPin, BarChart3, Users } from "lucide-react";
+import { AnimatedPlane } from "@/components/AnimatedPlane";
 
 export default function Home() {
   return (
@@ -8,10 +9,10 @@ export default function Home() {
       {/* Navigation */}
       <nav className="border-b border-white/10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Plane className="h-6 w-6" />
+          <Link href="/" className="flex items-center gap-2 group">
+            <AnimatedPlane size="sm" />
             <span className="text-xl font-semibold">Logbook</span>
-          </div>
+          </Link>
           <div className="flex items-center gap-4">
             <Link href="/login">
               <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
@@ -67,7 +68,7 @@ export default function Home() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="space-y-4">
               <div className="w-12 h-12 rounded-lg bg-white/10 flex items-center justify-center">
-                <Plane className="h-6 w-6" />
+                <AnimatedPlane size="sm" />
               </div>
               <h3 className="text-xl font-semibold">Detailed Logging</h3>
               <p className="text-white/60">

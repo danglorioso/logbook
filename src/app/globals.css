@@ -39,3 +39,29 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
+
+@keyframes flyAway {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  /* fly towards top-right, shrinking & fading */
+  45% {
+    transform: translate(180%, -180%) scale(0.3);
+    opacity: 0;
+  }
+  /* jump to bottom-left off-screen */
+  55% {
+    transform: translate(-180%, 180%) scale(0.3);
+    opacity: 0;
+  }
+  /* return to original position */
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+}
+
+.group:hover .plane-fly-animation {
+  animation: flyAway 1s ease-in-out;
+}
