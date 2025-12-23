@@ -118,7 +118,7 @@ export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 text-sm">
           <div>
             <div className="text-white/60 mb-1">Aircraft</div>
             <div className="font-medium">{flight.aircraft || "N/A"}</div>
@@ -135,8 +135,80 @@ export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
             <div className="text-white/60 mb-1">Cruise Altitude</div>
             <div className="font-medium">{flight.cruiseAltitude || "N/A"}</div>
           </div>
+          {flight.blockFuel !== null && (
+            <div>
+              <div className="text-white/60 mb-1">Block Fuel</div>
+              <div className="font-medium">{flight.blockFuel} lbs</div>
+            </div>
+          )}
+          {flight.passengers !== null && (
+            <div>
+              <div className="text-white/60 mb-1">PAX</div>
+              <div className="font-medium">{flight.passengers}</div>
+            </div>
+          )}
+          {flight.cargo !== null && (
+            <div>
+              <div className="text-white/60 mb-1">Cargo</div>
+              <div className="font-medium">{flight.cargo} lbs</div>
+            </div>
+          )}
+          {flight.takeoffRunway && (
+            <div>
+              <div className="text-white/60 mb-1">TO Runway</div>
+              <div className="font-medium">{flight.takeoffRunway}</div>
+            </div>
+          )}
+          {flight.sid && (
+            <div>
+              <div className="text-white/60 mb-1">SID</div>
+              <div className="font-medium">{flight.sid}</div>
+            </div>
+          )}
+          {flight.v1 && (
+            <div>
+              <div className="text-white/60 mb-1">V1</div>
+              <div className="font-medium">{flight.v1}</div>
+            </div>
+          )}
+          {flight.vr && (
+            <div>
+              <div className="text-white/60 mb-1">VR</div>
+              <div className="font-medium">{flight.vr}</div>
+            </div>
+          )}
+          {flight.v2 && (
+            <div>
+              <div className="text-white/60 mb-1">V2</div>
+              <div className="font-medium">{flight.v2}</div>
+            </div>
+          )}
+          {flight.toga && (
+            <div>
+              <div className="text-white/60 mb-1">TOGA</div>
+              <div className="font-medium">Yes</div>
+            </div>
+          )}
+          {flight.landingRunway && (
+            <div>
+              <div className="text-white/60 mb-1">LDG Runway</div>
+              <div className="font-medium">{flight.landingRunway}</div>
+            </div>
+          )}
+          {flight.star && (
+            <div>
+              <div className="text-white/60 mb-1">STAR</div>
+              <div className="font-medium">{flight.star}</div>
+            </div>
+          )}
+          {flight.vapp && (
+            <div>
+              <div className="text-white/60 mb-1">VAPP</div>
+              <div className="font-medium">{flight.vapp}</div>
+            </div>
+          )}
           {flight.route && (
-            <div className="col-span-2 md:col-span-4">
+            <div className="col-span-2 md:col-span-4 lg:col-span-6">
               <div className="text-white/60 mb-1">Route</div>
               <div className="font-medium">{flight.route}</div>
             </div>
