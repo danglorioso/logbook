@@ -445,8 +445,14 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                   <Input
                     id="departure"
                     placeholder="ICAO code or airport name"
-                    {...register("departure")}
-                    className="bg-black border-white/10"
+                    maxLength={4}
+                    {...register("departure", {
+                      onChange: (e) => {
+                        const value = e.target.value.toUpperCase().slice(0, 4);
+                        setValue("departure", value);
+                      }
+                    })}
+                    className="bg-black border-white/10 uppercase"
                     autoComplete="off"
                     onBlur={() => {
                       setTimeout(() => setShowDepartureSuggestions(false), 200);
@@ -462,6 +468,11 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                             e.preventDefault();
                             setValue("departure", airport.icao);
                             setShowDepartureSuggestions(false);
+                            // Focus next field (arrival)
+                            setTimeout(() => {
+                              const arrivalInput = document.getElementById("arrival");
+                              arrivalInput?.focus();
+                            }, 100);
                           }}
                         >
                           <div className="font-medium">{airport.icao}</div>
@@ -476,8 +487,14 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                   <Input
                     id="arrival"
                     placeholder="ICAO code or airport name"
-                    {...register("arrival")}
-                    className="bg-black border-white/10"
+                    maxLength={4}
+                    {...register("arrival", {
+                      onChange: (e) => {
+                        const value = e.target.value.toUpperCase().slice(0, 4);
+                        setValue("arrival", value);
+                      }
+                    })}
+                    className="bg-black border-white/10 uppercase"
                     autoComplete="off"
                     onBlur={() => {
                       setTimeout(() => setShowArrivalSuggestions(false), 200);
@@ -493,6 +510,11 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                             e.preventDefault();
                             setValue("arrival", airport.icao);
                             setShowArrivalSuggestions(false);
+                            // Focus next field (cruiseAltitude)
+                            setTimeout(() => {
+                              const cruiseInput = document.getElementById("cruiseAltitude");
+                              cruiseInput?.focus();
+                            }, 100);
                           }}
                         >
                           <div className="font-medium">{airport.icao}</div>
