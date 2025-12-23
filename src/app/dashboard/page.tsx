@@ -143,8 +143,8 @@ export default function ProfilePage() {
 
       <div className="container mx-auto px-4 py-8 flex-1">
         {/* Profile Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
             {(() => {
               if (userProfile?.firstName && userProfile?.lastName) {
                 return `${userProfile.firstName} ${userProfile.lastName}`;
@@ -162,11 +162,11 @@ export default function ProfilePage() {
               return "Pilot";
             })()}&apos;s Flights
           </h1>
-          <p className="text-white/60">{user.primaryEmailAddress?.emailAddress}</p>
+          <p className="text-sm sm:text-base text-white/60 break-all">{user.primaryEmailAddress?.emailAddress}</p>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 sm:mb-8">
           {loading ? (
             <StatsSkeleton />
           ) : (
@@ -200,14 +200,14 @@ export default function ProfilePage() {
         </div>
 
         {/* Flights Section */}
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-2xl font-bold">Your Flights</h2>
+        <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <h2 className="text-xl sm:text-2xl font-bold">Your Flights</h2>
           <Button 
             onClick={() => {
               setEditingFlight(null);
               setOpen(true);
             }}
-            className="bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg"
+            className="w-full sm:w-auto bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg"
           >
             <Plus className="h-4 w-4 mr-2" />
             Add Flight

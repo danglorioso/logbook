@@ -69,9 +69,9 @@ export default function PublicFlightsPage() {
       <Navigation />
 
       <div className="container mx-auto px-4 py-8 flex-1">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Recent Flights</h1>
-          <p className="text-white/60">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">Recent Flights</h1>
+          <p className="text-sm sm:text-base text-white/60">
             Discover flights shared by the community
           </p>
         </div>
@@ -142,10 +142,10 @@ export default function PublicFlightsPage() {
                     )}
 
                     {/* Main Content */}
-                    <div className="flex flex-wrap gap-x-6 gap-y-4">
+                    <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-x-6 sm:gap-y-4">
                       {/* Takeoff Group */}
                       {(flight.takeoffRunway || flight.sid || flight.v1 || flight.vr || flight.v2 || flight.toga) && (
-                        <div className="flex gap-x-6">
+                        <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
                           {flight.takeoffRunway && (
                             <div>
                               <div className="text-white/60 mb-1">TO Runway</div>
@@ -187,7 +187,7 @@ export default function PublicFlightsPage() {
 
                       {/* Landing Group */}
                       {(flight.landingRunway || flight.star || flight.vapp) && (
-                        <div className="flex gap-x-6 border-l border-white/5 pl-6">
+                        <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 sm:border-l sm:border-white/5 sm:pl-6 pt-4 sm:pt-0 border-t sm:border-t-0 border-white/5">
                           {flight.landingRunway && (
                             <div>
                               <div className="text-white/60 mb-1">LDG Runway</div>
@@ -211,7 +211,7 @@ export default function PublicFlightsPage() {
 
                       {/* Misc Group (Cruise Altitude, Block Time, Block Fuel, Passengers, Cargo) */}
                       {(flight.cruiseAltitude || flight.blockTime || flight.blockFuel !== null || flight.passengers !== null || flight.cargo !== null) && (
-                        <div className="flex gap-x-6 border-l border-white/5 pl-6">
+                        <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 sm:border-l sm:border-white/5 sm:pl-6 pt-4 sm:pt-0 border-t sm:border-t-0 border-white/5">
                           {flight.cruiseAltitude && (
                             <div>
                               <div className="text-white/60 mb-1">Cruise Altitude</div>

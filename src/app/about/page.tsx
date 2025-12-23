@@ -14,13 +14,13 @@ export default function AboutPage() {
       <div className="flex-1 container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-16">
-            <div className="flex items-center justify-center gap-2 mb-6">
+          <div className="text-center mb-8 sm:mb-16">
+            <div className="flex items-center justify-center gap-2 mb-4 sm:mb-6">
               <AnimatedPlane size="lg" />
-              <span className="text-4xl font-semibold">Logbook</span>
+              <span className="text-2xl sm:text-3xl md:text-4xl font-semibold">Logbook</span>
             </div>
-            <h1 className="text-5xl font-bold mb-4">About</h1>
-            <p className="text-xl text-white/60">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">About</h1>
+            <p className="text-base sm:text-lg md:text-xl text-white/60 px-4">
               A flight simulator logbook built for the community
             </p>
           </div>
@@ -42,7 +42,7 @@ export default function AboutPage() {
                     That&apos;s why I built Logbook. I wanted to create a platform where flight simulator enthusiasts could:
                   </p>
 
-                  <ul className="list-disc list-inside space-y-2 text-lg leading-relaxed text-white/90 ml-4">
+                  <ul className="list-disc list-inside space-y-2 text-base sm:text-lg leading-relaxed text-white/90 ml-2 sm:ml-4">
                     <li>Log their flights with detailed information</li>
                     <li>Track their progress and statistics over time</li>
                     <li>Share their flights with the community</li>
@@ -63,9 +63,9 @@ export default function AboutPage() {
 
             {/* Features Card */}
             <Card className="bg-[#0a0a0a] border-white/10">
-              <CardContent className="p-8">
-                <h2 className="text-2xl font-bold mb-6">What You Can Do</h2>
-                <div className="grid md:grid-cols-2 gap-6">
+              <CardContent className="p-4 sm:p-6 md:p-8">
+                <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">What You Can Do</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div className="space-y-2">
                     <h3 className="text-lg font-semibold">Detailed Logging</h3>
                     <p className="text-white/60">

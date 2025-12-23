@@ -73,17 +73,17 @@ export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
 
   return (
     <Card className="bg-[#0a0a0a] border-white/10">
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <div className="text-sm text-white/60 mb-1">
+      <CardContent className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4">
+          <div className="flex-1 min-w-0">
+            <div className="text-xs sm:text-sm text-white/60 mb-1">
               {format(new Date(flight.date), "MMMM d, yyyy")}
             </div>
-            <div className="text-xl font-semibold">
+            <div className="text-lg sm:text-xl font-semibold break-words">
               {flight.departure || "N/A"} → {flight.arrival || "N/A"}
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <TooltipProvider delayDuration={200}>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -124,34 +124,34 @@ export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
         <div className="space-y-4 text-sm">
           {/* Flight Summary Header */}
           {(flight.aircraft || flight.callsign || flight.airframe) && (
-            <div className="flex flex-wrap gap-6 pb-3 border-b border-white/5">
+            <div className="flex flex-wrap gap-4 sm:gap-6 pb-3 border-b border-white/5">
               {flight.aircraft && (
                 <div>
                   <div className="text-white/40 text-xs uppercase mb-1">Aircraft</div>
-                  <div className="font-semibold text-base">{flight.aircraft}</div>
+                  <div className="font-semibold text-sm sm:text-base break-words">{flight.aircraft}</div>
                 </div>
               )}
               {flight.callsign && (
                 <div>
                   <div className="text-white/40 text-xs uppercase mb-1">Callsign</div>
-                  <div className="font-semibold text-base">{flight.callsign}</div>
+                  <div className="font-semibold text-sm sm:text-base break-words">{flight.callsign}</div>
                 </div>
               )}
               {flight.airframe && (
                 <div>
                   <div className="text-white/40 text-xs uppercase mb-1">Airframe</div>
-                  <div className="font-semibold text-base">{flight.airframe}</div>
+                  <div className="font-semibold text-sm sm:text-base break-words">{flight.airframe}</div>
                 </div>
               )}
             </div>
           )}
 
           {/* Main Content */}
-          <div className="flex flex-wrap gap-x-6 gap-y-4">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-x-6 sm:gap-y-4">
 
             {/* Takeoff Group */}
             {(flight.takeoffRunway || flight.sid || flight.v1 || flight.vr || flight.v2 || flight.toga) && (
-              <div className="flex gap-x-6">
+              <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
                 {flight.takeoffRunway && (
                   <div>
                     <div className="text-white/60 mb-1">TO Runway</div>
@@ -193,7 +193,7 @@ export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
 
             {/* Landing Group */}
             {(flight.landingRunway || flight.star || flight.vapp) && (
-              <div className="flex gap-x-6 border-l border-white/5 pl-6">
+              <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 sm:border-l sm:border-white/5 sm:pl-6 pt-4 sm:pt-0 border-t sm:border-t-0 border-white/5">
                 {flight.landingRunway && (
                   <div>
                     <div className="text-white/60 mb-1">LDG Runway</div>
@@ -217,7 +217,7 @@ export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
 
             {/* Misc Group (Cruise Altitude, Block Time, Block Fuel, Passengers, Cargo) */}
             {(flight.cruiseAltitude || flight.blockTime || flight.blockFuel !== null || flight.passengers !== null || flight.cargo !== null) && (
-              <div className="flex gap-x-6 border-l border-white/5 pl-6">
+              <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 sm:border-l sm:border-white/5 sm:pl-6 pt-4 sm:pt-0 border-t sm:border-t-0 border-white/5">
                 {flight.cruiseAltitude && (
                   <div>
                     <div className="text-white/60 mb-1">Cruise Altitude</div>

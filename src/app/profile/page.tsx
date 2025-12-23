@@ -115,9 +115,9 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-black text-white flex flex-col">
       <Navigation />
 
-      <div className="container mx-auto px-4 py-8 flex-1">
+      <div className="container mx-auto px-4 py-6 sm:py-8 flex-1">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-4xl font-bold mb-8">Profile Settings</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 sm:mb-8">Profile Settings</h1>
 
           {loading ? (
             <ProfileFormSkeleton />
@@ -171,7 +171,7 @@ export default function ProfilePage() {
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="firstName">First Name</Label>
                         <Input
@@ -212,19 +212,19 @@ export default function ProfilePage() {
                       />
                     </div>
 
-                    <div className="flex gap-4 pt-4 justify-end">
+                    <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-end">
                       <Button
                         type="button"
                         variant="outline"
                         onClick={() => router.push("/")}
-                        className="border-white/30 text-white hover:bg-white/10"
+                        className="w-full sm:w-auto border-white/30 text-white hover:bg-white/10"
                       >
                         Cancel
                       </Button>
                       <Button
                         type="submit"
                         disabled={saving}
-                        className="bg-white text-black hover:bg-white/90 shadow-md hover:shadow-lg"
+                        className="w-full sm:w-auto bg-white text-black hover:bg-white/90 shadow-md hover:shadow-lg"
                       >
                         {saving ? "Saving..." : "Save Changes"}
                       </Button>

@@ -418,7 +418,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-[#0a0a0a] border-white/10 text-white">
+      <DialogContent className="max-w-4xl w-[95vw] sm:w-full max-h-[90vh] overflow-y-auto bg-[#0a0a0a] border-white/10 text-white">
         {/* Visibility toggle positioned to align with X button */}
         <div className="absolute right-16 top-[1.325rem] flex items-center gap-3">
           {isPublic ? (
@@ -447,7 +447,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 bg-white/10 border border-white/20 p-1 h-10">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 bg-white/10 border border-white/20 p-1 h-auto sm:h-10 gap-1 sm:gap-0">
               <TabsTrigger 
                 value="general"
                 className="data-[state=active]:bg-white data-[state=active]:text-black text-white/70 hover:text-white transition-all"
@@ -476,7 +476,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
 
             <div className="min-h-[400px]">
             <TabsContent value="general" className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="date">Date *</Label>
                   <Input
@@ -711,7 +711,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                   <div className="text-lg font-semibold">{departureValue} - {departureAirportName}</div>
                 </div>
               )}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="takeoffRunway">Runway</Label>
                   <Input
@@ -779,7 +779,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                   <div className="text-lg font-semibold">{arrivalValue} - {arrivalAirportName}</div>
                 </div>
               )}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="landingRunway">Runway</Label>
                   <Input
@@ -854,7 +854,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
             </TabsContent>
 
             <TabsContent value="postflight" className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="airTime">Air Time</Label>
                   <div className="flex gap-2">
@@ -1016,25 +1016,25 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
             </div>
           </Tabs>
 
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
             <div>
               {!isFirstTab && (
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handlePrevious}
-                  className="border-white/30 text-white hover:bg-white/10"
+                  className="w-full sm:w-auto border-white/30 text-white hover:bg-white/10"
                 >
                   Previous
                 </Button>
               )}
             </div>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                className="border-white/30 text-white hover:bg-white/10"
+                className="w-full sm:w-auto border-white/30 text-white hover:bg-white/10"
               >
                 Cancel
               </Button>
@@ -1042,7 +1042,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                 <Button
                   type="button"
                   onClick={handleNext}
-                  className="bg-white text-black hover:bg-white/90 shadow-md"
+                  className="w-full sm:w-auto bg-white text-black hover:bg-white/90 shadow-md"
                 >
                   Next
                 </Button>
@@ -1050,7 +1050,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                 <Button 
                   type="submit" 
                   disabled={loading}
-                  className="bg-white text-black hover:bg-white/90 shadow-md hover:shadow-lg disabled:opacity-50"
+                  className="w-full sm:w-auto bg-white text-black hover:bg-white/90 shadow-md hover:shadow-lg disabled:opacity-50"
                 >
                   {loading ? "Saving..." : "Save Flight"}
                 </Button>

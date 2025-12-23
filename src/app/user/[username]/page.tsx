@@ -150,17 +150,17 @@ export default function UserProfilePage() {
 
       <div className="container mx-auto px-4 py-8 flex-1">
         {/* Profile Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 break-words">
             {displayName}&apos;s Flights
           </h1>
-          <p className="text-white/60">
+          <p className="text-sm sm:text-base text-white/60 break-all">
             @{user.username}
           </p>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 sm:mb-8">
           <Card className="bg-[#0a0a0a] border-white/10">
             <CardHeader>
               <CardTitle className="text-sm text-white/60">Total Flights</CardTitle>
@@ -189,7 +189,7 @@ export default function UserProfilePage() {
 
         {/* Flights Section */}
         <div className="mb-4">
-          <h2 className="text-2xl font-bold">Public Flights</h2>
+          <h2 className="text-xl sm:text-2xl font-bold">Public Flights</h2>
         </div>
 
         {flights.length === 0 ? (
@@ -241,10 +241,10 @@ export default function UserProfilePage() {
                     )}
 
                     {/* Main Content */}
-                    <div className="flex flex-wrap gap-x-6 gap-y-4">
+                    <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-x-6 sm:gap-y-4">
                       {/* Takeoff Group */}
                       {(flight.takeoffRunway || flight.sid || flight.v1 || flight.vr || flight.v2 || flight.toga) && (
-                        <div className="flex gap-x-6">
+                        <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
                           {flight.takeoffRunway && (
                             <div>
                               <div className="text-white/60 mb-1">TO Runway</div>
@@ -286,7 +286,7 @@ export default function UserProfilePage() {
 
                       {/* Landing Group */}
                       {(flight.landingRunway || flight.star || flight.vapp) && (
-                        <div className="flex gap-x-6 border-l border-white/5 pl-6">
+                        <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 sm:border-l sm:border-white/5 sm:pl-6 pt-4 sm:pt-0 border-t sm:border-t-0 border-white/5">
                           {flight.landingRunway && (
                             <div>
                               <div className="text-white/60 mb-1">LDG Runway</div>
@@ -310,7 +310,7 @@ export default function UserProfilePage() {
 
                       {/* Misc Group (Cruise Altitude, Block Time, Block Fuel, Passengers, Cargo, Route Distance) */}
                       {(flight.cruiseAltitude || flight.blockTime || flight.blockFuel !== null || flight.passengers !== null || flight.cargo !== null || flight.routeDistance !== null) && (
-                        <div className="flex gap-x-6 border-l border-white/5 pl-6">
+                        <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 sm:border-l sm:border-white/5 sm:pl-6 pt-4 sm:pt-0 border-t sm:border-t-0 border-white/5">
                           {flight.cruiseAltitude && (
                             <div>
                               <div className="text-white/60 mb-1">CRZ FL</div>

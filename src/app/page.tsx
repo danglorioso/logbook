@@ -111,28 +111,31 @@ function LandingPage() {
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-24">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-6xl md:text-7xl font-bold mb-6 tracking-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight">
             Track Your
             <br />
             <span className="text-blue-200/80">Flight Simulator</span>
             <br />
             Adventures
           </h1>
-          <p className="text-xl text-white/60 mb-12 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl text-white/60 mb-8 sm:mb-12 max-w-2xl mx-auto leading-relaxed px-4">
             Log every flight, track your progress, and share your journeys with 
             the flight simulator community. Built for flight simulator enthusiasts.
           </p>
-          <div className="flex gap-4 justify-center">
-            <Link href="/register">
-              <Button size="lg" className="text-lg px-8 py-6 bg-white text-black border-2 border-transparent">
+          <p className="text-sm sm:text-base md:text-lg text-white/80 font-semibold mb-8 sm:mb-12">
+            100% Free • No Credit Card Required
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
+            <Link href="/register" className="w-full sm:w-auto">
+              <Button size="lg" className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 bg-white text-black border-2 border-transparent">
                 Start Logging Flights
               </Button>
             </Link>
-            <Link href="/public">
+            <Link href="/public" className="w-full sm:w-auto">
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="text-lg px-8 py-6 border-2 border-white/30 text-white hover:bg-white/10"
+                className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 border-2 border-white/30 text-white hover:bg-white/10"
               >
                 View Public Flights
               </Button>
@@ -145,15 +148,15 @@ function LandingPage() {
       {(loadingFlights || publicFlights.length > 0) && (
         <section className="container mx-auto px-4 py-24 border-t border-white/10">
           <div className="max-w-6xl mx-auto">
-            <div className="flex items-center justify-between mb-12">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 sm:mb-12">
               <div>
-                <h2 className="text-4xl font-bold mb-2">Latest Flights</h2>
-                <p className="text-white/60">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">Latest Flights</h2>
+                <p className="text-sm sm:text-base text-white/60">
                   See what other pilots are sharing
                 </p>
               </div>
-              <Link href="/public">
-                <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
+              <Link href="/public" className="w-full sm:w-auto">
+                <Button variant="outline" className="w-full sm:w-auto border-white/30 text-white hover:bg-white/10">
                   View All
                 </Button>
               </Link>
@@ -263,8 +266,8 @@ function LandingPage() {
       {/* Features Section */}
       <section className="container mx-auto px-4 py-24 border-t border-white/10">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-16">Everything You Need</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-16">Everything You Need</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             <div className="space-y-4">
               <div className="w-12 h-12 rounded-lg bg-white/10 flex items-center justify-center">
                 <AnimatedPlane size="sm" />
@@ -423,8 +426,8 @@ function DashboardContent() {
 
       <div className="container mx-auto px-4 py-8 flex-1">
         {/* Profile Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
             {(() => {
               if (userProfile?.firstName && userProfile?.lastName) {
                 return `${userProfile.firstName} ${userProfile.lastName}`;
@@ -442,11 +445,11 @@ function DashboardContent() {
               return "Pilot";
             })()}&apos;s Flights
           </h1>
-          <p className="text-white/60">{user.primaryEmailAddress?.emailAddress}</p>
+          <p className="text-sm sm:text-base text-white/60 break-all">{user.primaryEmailAddress?.emailAddress}</p>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 sm:mb-8">
           {loading ? (
             <StatsSkeleton />
           ) : (
@@ -480,14 +483,14 @@ function DashboardContent() {
         </div>
 
         {/* Flights Section */}
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-2xl font-bold">Your Flights</h2>
+        <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <h2 className="text-xl sm:text-2xl font-bold">Your Flights</h2>
           <Button 
             onClick={() => {
               setEditingFlight(null);
               setOpen(true);
             }}
-            className="bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg"
+            className="w-full sm:w-auto bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg"
           >
             <Plus className="h-4 w-4 mr-2" />
             Add Flight
@@ -536,6 +539,7 @@ function DashboardContent() {
           flight={editingFlight}
         />
       </div>
+      <Footer />
     </div>
   );
 }
