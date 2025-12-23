@@ -31,7 +31,7 @@ interface Flight {
   flaps: string | null;
   landingRunway: string | null;
   star: string | null;
-  brake: "LOW" | "MED" | null;
+  brake: "LOW" | "MED" | "MAX" | null;
   vapp: string | null;
   airTime: string | null;
   blockTime: string | null;

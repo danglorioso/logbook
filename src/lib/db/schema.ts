@@ -38,7 +38,7 @@ export interface Flight {
   // Landing
   landingRunway: string | null;
   star: string | null;
-  brake: "LOW" | "MED" | null;
+  brake: "LOW" | "MED" | "MAX" | null;
   vapp: string | null;
   
   // Post Flight

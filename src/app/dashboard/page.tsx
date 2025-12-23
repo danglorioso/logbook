@@ -30,7 +30,7 @@ interface Flight {
   flaps: string | null;
   landingRunway: string | null;
   star: string | null;
-  brake: "LOW" | "MED" | null;
+  brake: "LOW" | "MED" | "MAX" | null;
   vapp: string | null;
   airTime: string | null;
   blockTime: string | null;
@@ -152,7 +152,7 @@ export default function ProfilePage() {
         {/* Profile Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">
-            {user.username || user.firstName || user.fullName || "Pilot"}
+            {(user.username || user.firstName || user.fullName || "Pilot")}'s Flights
           </h1>
           <p className="text-white/60">{user.primaryEmailAddress?.emailAddress}</p>
         </div>

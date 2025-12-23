@@ -48,7 +48,7 @@ const flightSchema = z.object({
   flaps: z.string().optional(),
   landingRunway: z.string().optional(),
   star: z.string().optional(),
-  brake: z.enum(["LOW", "MED"]).optional(),
+  brake: z.enum(["LOW", "MED", "MAX"]).optional(),
   vapp: z.string().optional(),
   airTime: z.string().optional(),
   blockTime: z.string().optional(),
@@ -82,7 +82,7 @@ interface Flight {
   flaps: string | null;
   landingRunway: string | null;
   star: string | null;
-  brake: "LOW" | "MED" | null;
+  brake: "LOW" | "MED" | "MAX" | null;
   vapp: string | null;
   airTime: string | null;
   blockTime: string | null;
@@ -420,7 +420,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-[#0a0a0a] border-white/10 text-white">
         {/* Visibility toggle positioned to align with X button */}
-        <div className="absolute right-16 top-4 flex items-center gap-3">
+        <div className="absolute right-16 top-[1.325rem] flex items-center gap-3">
           {isPublic ? (
             <Eye className="h-5 w-5 text-white/60" />
           ) : (
@@ -835,6 +835,20 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                     }}
                   />
                   <Label htmlFor="brake-med" className="cursor-pointer">MED</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="brake-max"
+                    checked={brake === "MAX"}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setValue("brake", "MAX");
+                      } else if (brake === "MAX") {
+                        setValue("brake", undefined);
+                      }
+                    }}
+                  />
+                  <Label htmlFor="brake-max" className="cursor-pointer">MAX</Label>
                 </div>
               </div>
             </TabsContent>
