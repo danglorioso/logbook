@@ -14,8 +14,9 @@ import {
 interface Flight {
   id: string;
   date: string;
-  aircraft: string | null;
   callsign: string | null;
+  aircraft: string | null;
+  airframe: string | null;
   departure: string | null;
   arrival: string | null;
   cruiseAltitude: string | null;
@@ -32,9 +33,10 @@ interface Flight {
   star: string | null;
   brake: "LOW" | "MED" | null;
   vapp: string | null;
-  totalDuration: string | null;
-  landRate: number | null;
-  timeOfDay: "MORNING" | "MID-DAY" | "EVENING" | "NIGHT" | null;
+  airTime: string | null;
+  blockTime: string | null;
+  landRate: "butter" | "great" | "acceptable" | "hard" | "wasted" | null;
+  timeOfDay: ("MORNING" | "MID-DAY" | "EVENING" | "NIGHT")[] | null;
   passengers: number | null;
   cargo: number | null;
   isPublic: boolean;
@@ -120,7 +122,7 @@ export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
 
         <div className="space-y-4 text-sm">
           {/* Flight Summary Header */}
-          {(flight.aircraft || flight.callsign || flight.totalDuration || flight.cruiseAltitude) && (
+          {(flight.aircraft || flight.callsign || flight.cruiseAltitude) && (
             <div className="flex flex-wrap gap-6 pb-3 border-b border-white/5">
               {flight.aircraft && (
                 <div>
@@ -132,12 +134,6 @@ export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
                 <div>
                   <div className="text-white/40 text-xs uppercase mb-1">Callsign</div>
                   <div className="font-semibold text-base">{flight.callsign}</div>
-                </div>
-              )}
-              {flight.totalDuration && (
-                <div>
-                  <div className="text-white/40 text-xs uppercase mb-1">Duration</div>
-                  <div className="font-semibold text-base">{flight.totalDuration}</div>
                 </div>
               )}
               {flight.cruiseAltitude && (
@@ -169,19 +165,19 @@ export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
                 )}
                 {flight.v1 && (
                   <div>
-                    <div className="text-white/60 mb-1">V1</div>
+                    <div className="text-white/60 mb-1">V₁</div>
                     <div className="font-medium">{flight.v1}</div>
                   </div>
                 )}
                 {flight.vr && (
                   <div>
-                    <div className="text-white/60 mb-1">VR</div>
+                    <div className="text-white/60 mb-1">Vᵣ</div>
                     <div className="font-medium">{flight.vr}</div>
                   </div>
                 )}
                 {flight.v2 && (
                   <div>
-                    <div className="text-white/60 mb-1">V2</div>
+                    <div className="text-white/60 mb-1">V₂</div>
                     <div className="font-medium">{flight.v2}</div>
                   </div>
                 )}
@@ -211,14 +207,14 @@ export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
                 )}
                 {flight.vapp && (
                   <div>
-                    <div className="text-white/60 mb-1">VAPP</div>
+                    <div className="text-white/60 mb-1">Vₐₚₚ</div>
                     <div className="font-medium">{flight.vapp}</div>
                   </div>
                 )}
               </div>
             )}
 
-            {/* Misc Group (PAX, Cargo, Block Fuel) */}
+            {/* Misc Group (Passengers, Cargo, Block Fuel) */}
             {(flight.blockFuel !== null || flight.passengers !== null || flight.cargo !== null) && (
               <div className="flex gap-x-6 border-l border-white/5 pl-6">
                 {flight.blockFuel !== null && (
@@ -229,7 +225,7 @@ export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
                 )}
                 {flight.passengers !== null && (
                   <div>
-                    <div className="text-white/60 mb-1">PAX</div>
+                    <div className="text-white/60 mb-1">Passengers</div>
                     <div className="font-medium">{flight.passengers}</div>
                   </div>
                 )}

@@ -1,4 +1,3 @@
-import { neon } from "@neondatabase/serverless";
 import { sql } from "./schema";
 import type { Flight, User } from "./schema";
 
@@ -47,29 +46,33 @@ export async function getFlightsByUserId(userId: string): Promise<Flight[]> {
   const result = await sql`
     SELECT 
       id, user_id as "userId", date,
-      aircraft, callsign, departure, arrival, cruise_altitude as "cruiseAltitude",
+      callsign, aircraft, airframe, departure, arrival, cruise_altitude as "cruiseAltitude",
       block_fuel as "blockFuel", route,
       takeoff_runway as "takeoffRunway", sid, v1, vr, v2, toga, flaps,
       landing_runway as "landingRunway", star, brake, vapp,
-      total_duration as "totalDuration", land_rate as "landRate",
+      air_time as "airTime", block_time as "blockTime", land_rate as "landRate",
       time_of_day as "timeOfDay", passengers, cargo,
       is_public as "isPublic", created_at as "createdAt", updated_at as "updatedAt"
     FROM flights
     WHERE user_id = ${userId}
     ORDER BY date DESC, created_at DESC
   `;
-  return result as Flight[];
+  // Parse comma-separated timeOfDay string to array
+  return (result as Array<Omit<Flight, 'timeOfDay'> & { timeOfDay: string | null }>).map(flight => ({
+    ...flight,
+    timeOfDay: flight.timeOfDay ? flight.timeOfDay.split(',').filter(Boolean) as ("MORNING" | "MID-DAY" | "EVENING" | "NIGHT")[] : null,
+  })) as Flight[];
 }
 
 export async function getPublicFlights(limit = 50): Promise<Flight[]> {
   const result = await sql`
     SELECT 
       f.id, f.user_id as "userId", f.date,
-      f.aircraft, f.callsign, f.departure, f.arrival, f.cruise_altitude as "cruiseAltitude",
+      f.callsign, f.aircraft, f.airframe, f.departure, f.arrival, f.cruise_altitude as "cruiseAltitude",
       f.block_fuel as "blockFuel", f.route,
       f.takeoff_runway as "takeoffRunway", f.sid, f.v1, f.vr, f.v2, f.toga, f.flaps,
       f.landing_runway as "landingRunway", f.star, f.brake, f.vapp,
-      f.total_duration as "totalDuration", f.land_rate as "landRate",
+      f.air_time as "airTime", f.block_time as "blockTime", f.land_rate as "landRate",
       f.time_of_day as "timeOfDay", f.passengers, f.cargo,
       f.is_public as "isPublic", f.created_at as "createdAt", f.updated_at as "updatedAt",
       u.name as "username", u.email as "userEmail"
@@ -79,42 +82,51 @@ export async function getPublicFlights(limit = 50): Promise<Flight[]> {
     ORDER BY f.date DESC, f.created_at DESC
     LIMIT ${limit}
   `;
-  return result as any[];
+  // Parse comma-separated timeOfDay string to array
+  return (result as Array<Omit<Flight, 'timeOfDay'> & { timeOfDay: string | null; username?: string; userEmail?: string }>).map(flight => ({
+    ...flight,
+    timeOfDay: flight.timeOfDay ? flight.timeOfDay.split(',').filter(Boolean) as ("MORNING" | "MID-DAY" | "EVENING" | "NIGHT")[] : null,
+  })) as (Flight & { username?: string; userEmail?: string })[];
 }
 
 export async function createFlight(userId: string, flightData: Partial<Flight>): Promise<Flight> {
   const result = await sql`
     INSERT INTO flights (
-      user_id, date, aircraft, callsign, departure, arrival, cruise_altitude,
+      user_id, date, callsign, aircraft, airframe, departure, arrival, cruise_altitude,
       block_fuel, route, takeoff_runway, sid, v1, vr, v2, toga, flaps,
-      landing_runway, star, brake, vapp, total_duration, land_rate,
+      landing_runway, star, brake, vapp, air_time, block_time, land_rate,
       time_of_day, passengers, cargo, is_public
     )
     VALUES (
-      ${userId}, ${flightData.date}, ${flightData.aircraft || null}, 
-      ${flightData.callsign || null}, ${flightData.departure || null}, 
-      ${flightData.arrival || null}, ${flightData.cruiseAltitude || null},
+      ${userId}, ${flightData.date}, ${flightData.callsign || null}, 
+      ${flightData.aircraft || null}, ${flightData.airframe || null}, 
+      ${flightData.departure || null}, ${flightData.arrival || null}, ${flightData.cruiseAltitude || null},
       ${flightData.blockFuel || null}, ${flightData.route || null},
       ${flightData.takeoffRunway || null}, ${flightData.sid || null},
       ${flightData.v1 || null}, ${flightData.vr || null}, ${flightData.v2 || null},
       ${flightData.toga || false}, ${flightData.flaps || null},
       ${flightData.landingRunway || null}, ${flightData.star || null},
       ${flightData.brake || null}, ${flightData.vapp || null},
-      ${flightData.totalDuration || null}, ${flightData.landRate || null},
+      ${flightData.airTime || null}, ${flightData.blockTime || null}, ${flightData.landRate || null},
       ${flightData.timeOfDay || null}, ${flightData.passengers || null},
       ${flightData.cargo || null}, ${flightData.isPublic || false}
     )
     RETURNING 
       id, user_id as "userId", date,
-      aircraft, callsign, departure, arrival, cruise_altitude as "cruiseAltitude",
+      callsign, aircraft, airframe, departure, arrival, cruise_altitude as "cruiseAltitude",
       block_fuel as "blockFuel", route,
       takeoff_runway as "takeoffRunway", sid, v1, vr, v2, toga, flaps,
       landing_runway as "landingRunway", star, brake, vapp,
-      total_duration as "totalDuration", land_rate as "landRate",
+      air_time as "airTime", block_time as "blockTime", land_rate as "landRate",
       time_of_day as "timeOfDay", passengers, cargo,
       is_public as "isPublic", created_at as "createdAt", updated_at as "updatedAt"
   `;
-  return result[0] as Flight;
+  // Parse comma-separated timeOfDay string to array
+  const flight = result[0] as Omit<Flight, 'timeOfDay'> & { timeOfDay: string | null };
+  return {
+    ...flight,
+    timeOfDay: flight.timeOfDay ? flight.timeOfDay.split(',').filter(Boolean) as ("MORNING" | "MID-DAY" | "EVENING" | "NIGHT")[] : null,
+  } as Flight;
 }
 
 export async function updateFlight(
@@ -126,8 +138,9 @@ export async function updateFlight(
     UPDATE flights
     SET
       date = ${flightData.date},
-      aircraft = ${flightData.aircraft || null},
       callsign = ${flightData.callsign || null},
+      aircraft = ${flightData.aircraft || null},
+      airframe = ${flightData.airframe || null},
       departure = ${flightData.departure || null},
       arrival = ${flightData.arrival || null},
       cruise_altitude = ${flightData.cruiseAltitude || null},
@@ -144,7 +157,8 @@ export async function updateFlight(
       star = ${flightData.star || null},
       brake = ${flightData.brake || null},
       vapp = ${flightData.vapp || null},
-      total_duration = ${flightData.totalDuration || null},
+      air_time = ${flightData.airTime || null},
+      block_time = ${flightData.blockTime || null},
       land_rate = ${flightData.landRate || null},
       time_of_day = ${flightData.timeOfDay || null},
       passengers = ${flightData.passengers || null},
@@ -154,15 +168,21 @@ export async function updateFlight(
     WHERE id = ${flightId} AND user_id = ${userId}
     RETURNING 
       id, user_id as "userId", date,
-      aircraft, callsign, departure, arrival, cruise_altitude as "cruiseAltitude",
+      callsign, aircraft, airframe, departure, arrival, cruise_altitude as "cruiseAltitude",
       block_fuel as "blockFuel", route,
       takeoff_runway as "takeoffRunway", sid, v1, vr, v2, toga, flaps,
       landing_runway as "landingRunway", star, brake, vapp,
-      total_duration as "totalDuration", land_rate as "landRate",
+      air_time as "airTime", block_time as "blockTime", land_rate as "landRate",
       time_of_day as "timeOfDay", passengers, cargo,
       is_public as "isPublic", created_at as "createdAt", updated_at as "updatedAt"
   `;
-  return result[0] as Flight | null;
+  if (result.length === 0) return null;
+  // Parse comma-separated timeOfDay string to array
+  const flight = result[0] as Omit<Flight, 'timeOfDay'> & { timeOfDay: string | null };
+  return {
+    ...flight,
+    timeOfDay: flight.timeOfDay ? flight.timeOfDay.split(',').filter(Boolean) as ("MORNING" | "MID-DAY" | "EVENING" | "NIGHT")[] : null,
+  } as Flight;
 }
 
 export async function deleteFlight(flightId: string, userId: string): Promise<boolean> {

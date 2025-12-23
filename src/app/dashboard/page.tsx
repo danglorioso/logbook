@@ -13,8 +13,9 @@ import Link from "next/link";
 interface Flight {
   id: string;
   date: string;
-  aircraft: string | null;
   callsign: string | null;
+  aircraft: string | null;
+  airframe: string | null;
   departure: string | null;
   arrival: string | null;
   cruiseAltitude: string | null;
@@ -31,9 +32,10 @@ interface Flight {
   star: string | null;
   brake: "LOW" | "MED" | null;
   vapp: string | null;
-  totalDuration: string | null;
-  landRate: number | null;
-  timeOfDay: "MORNING" | "MID-DAY" | "EVENING" | "NIGHT" | null;
+  airTime: string | null;
+  blockTime: string | null;
+  landRate: "butter" | "great" | "acceptable" | "hard" | "wasted" | null;
+  timeOfDay: ("MORNING" | "MID-DAY" | "EVENING" | "NIGHT")[] | null;
   passengers: number | null;
   cargo: number | null;
   isPublic: boolean;
@@ -111,8 +113,8 @@ export default function ProfilePage() {
   const stats = {
     totalFlights: flights.length,
     totalHours: flights.reduce((acc, f) => {
-      if (f.totalDuration) {
-        const [hours, mins] = f.totalDuration.split(":").map(Number);
+      if (f.blockTime) {
+        const [hours, mins] = f.blockTime.split(":").map(Number);
         return acc + hours + mins / 60;
       }
       return acc;
@@ -181,7 +183,9 @@ export default function ProfilePage() {
 
         {/* Flights Section */}
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-2xl font-bold">Your Flights</h2>
+          <h2 className="text-2xl font-bold">
+            {(user.username || user.firstName || user.fullName || "Pilot")}'s Flights
+          </h2>
           <Button 
             onClick={() => {
               setEditingFlight(null);

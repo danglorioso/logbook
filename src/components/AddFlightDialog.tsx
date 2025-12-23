@@ -18,14 +18,22 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Eye, Lock } from "lucide-react";
 import { AIRCRAFT_DATABASE } from "@/lib/aircraft-database";
 import { loadAirports, searchAirports } from "@/lib/airports-database";
 
 const flightSchema = z.object({
   date: z.string().min(1, "Date is required"),
-  aircraft: z.string().optional(),
   callsign: z.string().optional(),
+  aircraft: z.string().optional(),
+  airframe: z.string().optional(),
   departure: z.string().optional(),
   arrival: z.string().optional(),
   cruiseAltitude: z.string().optional(),
@@ -42,9 +50,10 @@ const flightSchema = z.object({
   star: z.string().optional(),
   brake: z.enum(["LOW", "MED"]).optional(),
   vapp: z.string().optional(),
-  totalDuration: z.string().optional(),
-  landRate: z.number().optional(),
-  timeOfDay: z.enum(["MORNING", "MID-DAY", "EVENING", "NIGHT"]).optional(),
+  airTime: z.string().optional(),
+  blockTime: z.string().optional(),
+  landRate: z.enum(["butter", "great", "acceptable", "hard", "wasted"]).optional(),
+  timeOfDay: z.array(z.enum(["MORNING", "MID-DAY", "EVENING", "NIGHT"])).optional(),
   passengers: z.number().optional(),
   cargo: z.number().optional(),
   isPublic: z.boolean().optional(),
@@ -55,8 +64,9 @@ type FlightFormData = z.infer<typeof flightSchema>;
 interface Flight {
   id: string;
   date: string;
-  aircraft: string | null;
   callsign: string | null;
+  aircraft: string | null;
+  airframe: string | null;
   departure: string | null;
   arrival: string | null;
   cruiseAltitude: string | null;
@@ -73,9 +83,10 @@ interface Flight {
   star: string | null;
   brake: "LOW" | "MED" | null;
   vapp: string | null;
-  totalDuration: string | null;
-  landRate: number | null;
-  timeOfDay: "MORNING" | "MID-DAY" | "EVENING" | "NIGHT" | null;
+  airTime: string | null;
+  blockTime: string | null;
+  landRate: "butter" | "great" | "acceptable" | "hard" | "wasted" | null;
+  timeOfDay: ("MORNING" | "MID-DAY" | "EVENING" | "NIGHT")[] | string | null;
   passengers: number | null;
   cargo: number | null;
   isPublic: boolean;
@@ -98,6 +109,10 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
   const [arrivalSuggestions, setArrivalSuggestions] = useState<Array<{icao: string; name: string; city: string}>>([]);
   const [showArrivalSuggestions, setShowArrivalSuggestions] = useState(false);
   const [airports, setAirports] = useState<Array<{icao: string; name: string; city: string; country: string}>>([]);
+  const [airTimeHours, setAirTimeHours] = useState<string>("");
+  const [airTimeMinutes, setAirTimeMinutes] = useState<string>("");
+  const [blockTimeHours, setBlockTimeHours] = useState<string>("");
+  const [blockTimeMinutes, setBlockTimeMinutes] = useState<string>("");
   const isEditing = !!flight;
   
   const tabs = ["general", "takeoff", "landing", "postflight"];
@@ -134,8 +149,9 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
     resolver: zodResolver(flightSchema),
     defaultValues: flight ? {
       date: formatDateForInput(flight.date),
-      aircraft: flight.aircraft || "",
       callsign: flight.callsign || "",
+      aircraft: flight.aircraft || "",
+      airframe: flight.airframe || "",
       departure: flight.departure || "",
       arrival: flight.arrival || "",
       cruiseAltitude: flight.cruiseAltitude || "",
@@ -152,9 +168,14 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
       star: flight.star || "",
       brake: flight.brake || undefined,
       vapp: flight.vapp || "",
-      totalDuration: flight.totalDuration || "",
       landRate: flight.landRate || undefined,
-      timeOfDay: flight.timeOfDay || undefined,
+      timeOfDay: flight.timeOfDay 
+        ? (Array.isArray(flight.timeOfDay) 
+          ? flight.timeOfDay 
+          : (typeof flight.timeOfDay === 'string' 
+            ? (flight.timeOfDay.split(',') as ("MORNING" | "MID-DAY" | "EVENING" | "NIGHT")[]).filter(Boolean) 
+            : [])) 
+        : undefined,
       passengers: flight.passengers || undefined,
       cargo: flight.cargo || undefined,
       isPublic: flight.isPublic || false,
@@ -172,6 +193,16 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
   const aircraftValue = watch("aircraft");
   const departureValue = watch("departure");
   const arrivalValue = watch("arrival");
+
+  // Get airport names for display
+  const getAirportName = (icao: string | null | undefined): string | null => {
+    if (!icao || airports.length === 0) return null;
+    const airport = airports.find(a => a.icao === icao.toUpperCase());
+    return airport ? `${airport.name}${airport.city ? ` - ${airport.city}` : ''}` : null;
+  };
+
+  const departureAirportName = getAirportName(departureValue);
+  const arrivalAirportName = getAirportName(arrivalValue);
 
   // Update aircraft suggestions when aircraft value changes
   React.useEffect(() => {
@@ -236,13 +267,32 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
   const onSubmit = async (data: FlightFormData) => {
     setLoading(true);
     try {
+      // Concatenate hours and minutes into HH:MM format
+      const airTimeHoursStr = airTimeHours.padStart(2, '0');
+      const airTimeMinutesStr = airTimeMinutes.padStart(2, '0');
+      const airTime = (airTimeHours || airTimeMinutes) ? `${airTimeHoursStr}:${airTimeMinutesStr}` : undefined;
+      
+      const blockTimeHoursStr = blockTimeHours.padStart(2, '0');
+      const blockTimeMinutesStr = blockTimeMinutes.padStart(2, '0');
+      const blockTime = (blockTimeHours || blockTimeMinutes) ? `${blockTimeHoursStr}:${blockTimeMinutesStr}` : undefined;
+      
+      // Serialize timeOfDay array to comma-separated string for database
+      const timeOfDayString = data.timeOfDay && data.timeOfDay.length > 0 
+        ? data.timeOfDay.join(',') 
+        : undefined;
+      
       const url = isEditing ? `/api/flights/${flight.id}` : "/api/flights";
       const method = isEditing ? "PUT" : "POST";
       
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          airTime,
+          blockTime,
+          timeOfDay: timeOfDayString,
+        }),
       });
 
       if (response.ok) {
@@ -283,10 +333,33 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
   // Reset form when dialog opens/closes or flight changes
   React.useEffect(() => {
     if (open && flight) {
+      // Parse airTime (HH:MM) into hours and minutes
+      let airHours = "";
+      let airMinutes = "";
+      if (flight.airTime) {
+        const airParts = flight.airTime.split(':');
+        airHours = airParts[0] || "";
+        airMinutes = airParts[1] || "";
+      }
+      setAirTimeHours(airHours);
+      setAirTimeMinutes(airMinutes);
+      
+      // Parse blockTime (HH:MM) into hours and minutes
+      let blockHours = "";
+      let blockMinutes = "";
+      if (flight.blockTime) {
+        const blockParts = flight.blockTime.split(':');
+        blockHours = blockParts[0] || "";
+        blockMinutes = blockParts[1] || "";
+      }
+      setBlockTimeHours(blockHours);
+      setBlockTimeMinutes(blockMinutes);
+      
       reset({
         date: formatDateForInput(flight.date),
-        aircraft: flight.aircraft || "",
         callsign: flight.callsign || "",
+        aircraft: flight.aircraft || "",
+        airframe: flight.airframe || "",
         departure: flight.departure || "",
         arrival: flight.arrival || "",
         cruiseAltitude: flight.cruiseAltitude || "",
@@ -303,14 +376,25 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
         star: flight.star || "",
         brake: flight.brake || undefined,
         vapp: flight.vapp || "",
-        totalDuration: flight.totalDuration || "",
+        airTime: flight.airTime || "",
+        blockTime: flight.blockTime || "",
         landRate: flight.landRate || undefined,
-        timeOfDay: flight.timeOfDay || undefined,
+        timeOfDay: flight.timeOfDay 
+        ? (Array.isArray(flight.timeOfDay) 
+          ? flight.timeOfDay 
+          : (typeof flight.timeOfDay === 'string' 
+            ? (flight.timeOfDay.split(',') as ("MORNING" | "MID-DAY" | "EVENING" | "NIGHT")[]).filter(Boolean) 
+            : [])) 
+        : undefined,
         passengers: flight.passengers || undefined,
         cargo: flight.cargo || undefined,
         isPublic: flight.isPublic || false,
       });
     } else if (open && !flight) {
+      setAirTimeHours("");
+      setAirTimeMinutes("");
+      setBlockTimeHours("");
+      setBlockTimeMinutes("");
       reset({
         date: formatDateForInput(new Date()),
         toga: false,
@@ -350,7 +434,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 bg-white/10 border border-white/20 p-1 h-12">
+            <TabsList className="grid w-full grid-cols-4 bg-white/10 border border-white/20 p-1 h-10">
               <TabsTrigger 
                 value="general"
                 className="data-[state=active]:bg-white data-[state=active]:text-black text-white/70 hover:text-white transition-all"
@@ -391,6 +475,20 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                   {errors.date && (
                     <p className="text-sm text-red-400 mt-1">{errors.date.message}</p>
                   )}
+                </div>
+                <div>
+                  <Label htmlFor="callsign">Callsign</Label>
+                  <Input
+                    id="callsign"
+                    placeholder="ZZZ0000"
+                    {...register("callsign", {
+                      onChange: (e) => {
+                        const value = e.target.value.toUpperCase();
+                        setValue("callsign", value);
+                      }
+                    })}
+                    className="bg-black border-white/10 uppercase"
+                  />
                 </div>
                 <div className="relative">
                   <Label htmlFor="aircraft">Aircraft</Label>
@@ -433,11 +531,17 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                   )}
                 </div>
                 <div>
-                  <Label htmlFor="callsign">Callsign</Label>
+                  <Label htmlFor="airframe">Airframe</Label>
                   <Input
-                    id="callsign"
-                    {...register("callsign")}
-                    className="bg-black border-white/10"
+                    id="airframe"
+                    {...register("airframe", {
+                      onChange: (e) => {
+                        const value = e.target.value.toUpperCase();
+                        setValue("airframe", value);
+                      }
+                    })}
+                    className="bg-black border-white/10 uppercase"
+                    placeholder="N629JB"
                   />
                 </div>
                 <div className="relative">
@@ -452,7 +556,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                         setValue("departure", value);
                       }
                     })}
-                    className="bg-black border-white/10 uppercase"
+                    className="bg-black border-white/10"
                     autoComplete="off"
                     onBlur={() => {
                       setTimeout(() => setShowDepartureSuggestions(false), 200);
@@ -494,7 +598,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                         setValue("arrival", value);
                       }
                     })}
-                    className="bg-black border-white/10 uppercase"
+                    className="bg-black border-white/10"
                     autoComplete="off"
                     onBlur={() => {
                       setTimeout(() => setShowArrivalSuggestions(false), 200);
@@ -546,12 +650,17 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                 </div>
                 <div>
                   <Label htmlFor="blockFuel">Block Fuel</Label>
-                  <Input
-                    id="blockFuel"
-                    type="number"
-                    {...register("blockFuel", { valueAsNumber: true })}
-                    className="bg-black border-white/10"
-                  />
+                  <div className="relative">
+                    <Input
+                      id="blockFuel"
+                      type="number"
+                      step="0.01"
+                      {...register("blockFuel", { valueAsNumber: true })}
+                      className="bg-black border-white/10 pr-10"
+                      placeholder="0.00"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 pointer-events-none">kg</span>
+                  </div>
                 </div>
               </div>
               <div>
@@ -566,11 +675,18 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
             </TabsContent>
 
             <TabsContent value="takeoff" className="space-y-4">
+              {departureAirportName && (
+                <div className="mb-4 pb-3 border-b border-white/10">
+                  <div className="text-sm text-white/60 mb-1">Departure</div>
+                  <div className="text-lg font-semibold">{departureValue} - {departureAirportName}</div>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="takeoffRunway">Runway</Label>
                   <Input
                     id="takeoffRunway"
+                    placeholder="09L"
                     {...register("takeoffRunway")}
                     className="bg-black border-white/10"
                   />
@@ -584,7 +700,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                   />
                 </div>
                 <div>
-                  <Label htmlFor="v1">V1</Label>
+                  <Label htmlFor="v1">V₁</Label>
                   <Input
                     id="v1"
                     {...register("v1")}
@@ -592,7 +708,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                   />
                 </div>
                 <div>
-                  <Label htmlFor="vr">VR</Label>
+                  <Label htmlFor="vr">Vᵣ</Label>
                   <Input
                     id="vr"
                     {...register("vr")}
@@ -600,7 +716,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                   />
                 </div>
                 <div>
-                  <Label htmlFor="v2">V2</Label>
+                  <Label htmlFor="v2">V₂</Label>
                   <Input
                     id="v2"
                     {...register("v2")}
@@ -627,11 +743,18 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
             </TabsContent>
 
             <TabsContent value="landing" className="space-y-4">
+              {arrivalAirportName && (
+                <div className="mb-4 pb-3 border-b border-white/10">
+                  <div className="text-sm text-white/60 mb-1">Arrival</div>
+                  <div className="text-lg font-semibold">{arrivalValue} - {arrivalAirportName}</div>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="landingRunway">Runway</Label>
                   <Input
                     id="landingRunway"
+                    placeholder="27R"
                     {...register("landingRunway")}
                     className="bg-black border-white/10"
                   />
@@ -645,7 +768,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                   />
                 </div>
                 <div>
-                  <Label htmlFor="vapp">VAPP</Label>
+                  <Label htmlFor="vapp">Vₐₚₚ</Label>
                   <Input
                     id="vapp"
                     {...register("vapp")}
@@ -689,40 +812,124 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
             <TabsContent value="postflight" className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="totalDuration">Total Duration</Label>
-                  <Input
-                    id="totalDuration"
-                    placeholder="HH:MM"
-                    {...register("totalDuration")}
-                    className="bg-black border-white/10"
-                  />
+                  <Label htmlFor="airTime">Air Time</Label>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <Input
+                        id="airTimeHours"
+                        type="number"
+                        min="0"
+                        max="99"
+                        placeholder="00"
+                        value={airTimeHours}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 2);
+                          setAirTimeHours(value);
+                        }}
+                        className="bg-black border-white/10"
+                      />
+                      <p className="text-xs text-white/60 mt-1">hrs</p>
+                    </div>
+                    <div className="flex-1">
+                      <Input
+                        id="airTimeMinutes"
+                        type="number"
+                        min="0"
+                        max="59"
+                        placeholder="00"
+                        value={airTimeMinutes}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 2);
+                          if (parseInt(value) <= 59 || value === '') {
+                            setAirTimeMinutes(value);
+                          }
+                        }}
+                        className="bg-black border-white/10"
+                      />
+                      <p className="text-xs text-white/60 mt-1">mins</p>
+                    </div>
+                  </div>
                 </div>
                 <div>
-                  <Label htmlFor="landRate">Land Rate</Label>
-                  <Input
-                    id="landRate"
-                    type="number"
-                    {...register("landRate", { valueAsNumber: true })}
-                    className="bg-black border-white/10"
-                  />
+                  <Label htmlFor="blockTime">Block Time</Label>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <Input
+                        id="blockTimeHours"
+                        type="number"
+                        min="0"
+                        max="99"
+                        placeholder="00"
+                        value={blockTimeHours}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 2);
+                          setBlockTimeHours(value);
+                        }}
+                        className="bg-black border-white/10"
+                      />
+                      <p className="text-xs text-white/60 mt-1">hrs</p>
+                    </div>
+                    <div className="flex-1">
+                      <Input
+                        id="blockTimeMinutes"
+                        type="number"
+                        min="0"
+                        max="59"
+                        placeholder="00"
+                        value={blockTimeMinutes}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 2);
+                          if (parseInt(value) <= 59 || value === '') {
+                            setBlockTimeMinutes(value);
+                          }
+                        }}
+                        className="bg-black border-white/10"
+                      />
+                      <p className="text-xs text-white/60 mt-1">mins</p>
+                    </div>
+                  </div>
                 </div>
                 <div>
-                  <Label htmlFor="passengers">PAX</Label>
+                  <Label htmlFor="landRate">Rating</Label>
+                  <Select
+                    value={watch("landRate") || ""}
+                    onValueChange={(value) => setValue("landRate", value as "butter" | "great" | "acceptable" | "hard" | "wasted" | undefined)}
+                  >
+                    <SelectTrigger id="landRate" className="bg-black border-white/10 text-white">
+                      <SelectValue placeholder="Select rating" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#0a0a0a] border-white/10 text-white">
+                      <SelectItem value="butter" className="focus:bg-white/10 focus:text-white">Butter</SelectItem>
+                      <SelectItem value="great" className="focus:bg-white/10 focus:text-white">Great</SelectItem>
+                      <SelectItem value="acceptable" className="focus:bg-white/10 focus:text-white">Acceptable</SelectItem>
+                      <SelectItem value="hard" className="focus:bg-white/10 focus:text-white">Hard</SelectItem>
+                      <SelectItem value="wasted" className="focus:bg-white/10 focus:text-white">Wasted</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="passengers">Passengers</Label>
                   <Input
                     id="passengers"
                     type="number"
+                    placeholder="000"
                     {...register("passengers", { valueAsNumber: true })}
                     className="bg-black border-white/10"
                   />
                 </div>
                 <div>
                   <Label htmlFor="cargo">Cargo</Label>
-                  <Input
-                    id="cargo"
-                    type="number"
-                    {...register("cargo", { valueAsNumber: true })}
-                    className="bg-black border-white/10"
-                  />
+                  <div className="relative">
+                    <Input
+                      id="cargo"
+                      type="number"
+                      step="0.01"
+                      {...register("cargo", { valueAsNumber: true })}
+                      className="bg-black border-white/10 pr-10"
+                      placeholder="0.00"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 pointer-events-none">kg</span>
+                  </div>
                 </div>
               </div>
               <div>
@@ -732,12 +939,13 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                     <div key={time} className="flex items-center space-x-2">
                       <Checkbox
                         id={`time-${time}`}
-                        checked={timeOfDay === time}
+                        checked={Array.isArray(timeOfDay) && timeOfDay.includes(time)}
                         onCheckedChange={(checked) => {
+                          const current = Array.isArray(timeOfDay) ? timeOfDay : [];
                           if (checked) {
-                            setValue("timeOfDay", time);
-                          } else if (timeOfDay === time) {
-                            setValue("timeOfDay", undefined);
+                            setValue("timeOfDay", [...current, time]);
+                          } else {
+                            setValue("timeOfDay", current.filter(t => t !== time));
                           }
                         }}
                       />
@@ -776,7 +984,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                 <Button
                   type="button"
                   onClick={handleNext}
-                  className="bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg"
+                  className="bg-white text-black hover:bg-white/90 shadow-md"
                 >
                   Next
                 </Button>
@@ -784,7 +992,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                 <Button 
                   type="submit" 
                   disabled={loading}
-                  className="bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg disabled:opacity-50"
+                  className="bg-white text-black hover:bg-white/90 shadow-md hover:shadow-lg disabled:opacity-50"
                 >
                   {loading ? "Saving..." : "Save Flight"}
                 </Button>

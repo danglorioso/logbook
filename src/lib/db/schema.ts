@@ -17,8 +17,9 @@ export interface Flight {
   date: Date;
   
   // General
-  aircraft: string | null;
   callsign: string | null;
+  aircraft: string | null;
+  airframe: string | null;
   departure: string | null;
   arrival: string | null;
   cruiseAltitude: string | null;
@@ -41,9 +42,10 @@ export interface Flight {
   vapp: string | null;
   
   // Post Flight
-  totalDuration: string | null;
-  landRate: number | null;
-  timeOfDay: "MORNING" | "MID-DAY" | "EVENING" | "NIGHT" | null;
+  airTime: string | null;
+  blockTime: string | null;
+  landRate: "butter" | "great" | "acceptable" | "hard" | "wasted" | null;
+  timeOfDay: ("MORNING" | "MID-DAY" | "EVENING" | "NIGHT")[] | null;
   passengers: number | null;
   cargo: number | null;
   

@@ -10,8 +10,9 @@ import { format } from "date-fns";
 interface PublicFlight {
   id: string;
   date: string;
-  aircraft: string | null;
   callsign: string | null;
+  aircraft: string | null;
+  airframe: string | null;
   departure: string | null;
   arrival: string | null;
   cruiseAltitude: string | null;
@@ -28,9 +29,10 @@ interface PublicFlight {
   star: string | null;
   brake: "LOW" | "MED" | null;
   vapp: string | null;
-  totalDuration: string | null;
-  landRate: number | null;
-  timeOfDay: "MORNING" | "MID-DAY" | "EVENING" | "NIGHT" | null;
+  airTime: string | null;
+  blockTime: string | null;
+  landRate: "butter" | "great" | "acceptable" | "hard" | "wasted" | null;
+  timeOfDay: ("MORNING" | "MID-DAY" | "EVENING" | "NIGHT")[] | null;
   passengers: number | null;
   cargo: number | null;
   isPublic: boolean;
@@ -128,7 +130,7 @@ export default function PublicFlightsPage() {
                     </div>
                     <div>
                       <div className="text-white/60 mb-1">Duration</div>
-                      <div className="font-medium">{flight.totalDuration || "N/A"}</div>
+                      <div className="font-medium">{flight.blockTime || flight.airTime || "N/A"}</div>
                     </div>
                     <div>
                       <div className="text-white/60 mb-1">Cruise Altitude</div>
