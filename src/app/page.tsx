@@ -309,7 +309,7 @@ function LandingPage() {
       <section className="container mx-auto px-4 py-24 border-t border-white/10">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6">Ready to Start?</h2>
-          <p className="text-xl text-white/60 mb-8">
+          <p className="text-xl text-white/60 mb-4">
             Join the community of flight simulator enthusiasts tracking their journeys.
           </p>
           <Link href="/register">

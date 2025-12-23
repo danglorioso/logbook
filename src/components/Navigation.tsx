@@ -90,30 +90,32 @@ export function Navigation() {
               </Button>
             </div>
           ) : (
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-8">
               {/* Recent Flights Tab for non-logged-in users */}
-              <Link
-                href="/public"
-                className={cn(
-                  "px-4 py-2 rounded-md text-sm font-medium transition-colors",
-                  pathname === "/public"
-                    ? "bg-white/10 text-white"
-                    : "text-white/60 hover:text-white hover:bg-white/5"
-                )}
-              >
-                Recent Flights
-              </Link>
-              <Link
-                href="/about"
-                className={cn(
-                  "px-4 py-2 rounded-md text-sm font-medium transition-colors",
-                  pathname === "/about"
-                    ? "bg-white/10 text-white"
-                    : "text-white/60 hover:text-white hover:bg-white/5"
-                )}
-              >
-                About
-              </Link>
+              <div className="flex items-center gap-1">
+                <Link
+                  href="/public"
+                  className={cn(
+                    "px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                    pathname === "/public"
+                      ? "bg-white/10 text-white"
+                      : "text-white/60 hover:text-white hover:bg-white/5"
+                  )}
+                >
+                  Recent Flights
+                </Link>
+                <Link
+                  href="/about"
+                  className={cn(
+                    "px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                    pathname === "/about"
+                      ? "bg-white/10 text-white"
+                      : "text-white/60 hover:text-white hover:bg-white/5"
+                  )}
+                >
+                  About
+                </Link>
+              </div>
               <div className="flex items-center gap-4">
                 <Link href="/login">
                   <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
