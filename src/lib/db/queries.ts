@@ -51,7 +51,7 @@ export async function getFlightsByUserId(userId: string): Promise<Flight[]> {
       takeoff_runway as "takeoffRunway", sid, v1, vr, v2, toga, flaps,
       landing_runway as "landingRunway", star, brake, vapp,
       air_time as "airTime", block_time as "blockTime", land_rate as "landRate",
-      time_of_day as "timeOfDay", passengers, cargo,
+      time_of_day as "timeOfDay", passengers, cargo, route_distance as "routeDistance",
       is_public as "isPublic", created_at as "createdAt", updated_at as "updatedAt"
     FROM flights
     WHERE user_id = ${userId}
@@ -73,7 +73,7 @@ export async function getPublicFlights(limit = 50): Promise<Flight[]> {
       f.takeoff_runway as "takeoffRunway", f.sid, f.v1, f.vr, f.v2, f.toga, f.flaps,
       f.landing_runway as "landingRunway", f.star, f.brake, f.vapp,
       f.air_time as "airTime", f.block_time as "blockTime", f.land_rate as "landRate",
-      f.time_of_day as "timeOfDay", f.passengers, f.cargo,
+      f.time_of_day as "timeOfDay", f.passengers, f.cargo, f.route_distance as "routeDistance",
       f.is_public as "isPublic", f.created_at as "createdAt", f.updated_at as "updatedAt",
       u.name as "username", u.email as "userEmail"
     FROM flights f
@@ -95,7 +95,7 @@ export async function createFlight(userId: string, flightData: Partial<Flight>):
       user_id, date, callsign, aircraft, airframe, departure, arrival, cruise_altitude,
       block_fuel, route, takeoff_runway, sid, v1, vr, v2, toga, flaps,
       landing_runway, star, brake, vapp, air_time, block_time, land_rate,
-      time_of_day, passengers, cargo, is_public
+      time_of_day, passengers, cargo, route_distance, is_public
     )
     VALUES (
       ${userId}, ${flightData.date}, ${flightData.callsign || null}, 
@@ -109,7 +109,7 @@ export async function createFlight(userId: string, flightData: Partial<Flight>):
       ${flightData.brake || null}, ${flightData.vapp || null},
       ${flightData.airTime || null}, ${flightData.blockTime || null}, ${flightData.landRate || null},
       ${flightData.timeOfDay || null}, ${flightData.passengers || null},
-      ${flightData.cargo || null}, ${flightData.isPublic || false}
+      ${flightData.cargo || null}, ${flightData.routeDistance || null}, ${flightData.isPublic || false}
     )
     RETURNING 
       id, user_id as "userId", date,
@@ -118,7 +118,7 @@ export async function createFlight(userId: string, flightData: Partial<Flight>):
       takeoff_runway as "takeoffRunway", sid, v1, vr, v2, toga, flaps,
       landing_runway as "landingRunway", star, brake, vapp,
       air_time as "airTime", block_time as "blockTime", land_rate as "landRate",
-      time_of_day as "timeOfDay", passengers, cargo,
+      time_of_day as "timeOfDay", passengers, cargo, route_distance as "routeDistance",
       is_public as "isPublic", created_at as "createdAt", updated_at as "updatedAt"
   `;
   // Parse comma-separated timeOfDay string to array
@@ -163,6 +163,7 @@ export async function updateFlight(
       time_of_day = ${flightData.timeOfDay || null},
       passengers = ${flightData.passengers || null},
       cargo = ${flightData.cargo || null},
+      route_distance = ${flightData.routeDistance || null},
       is_public = ${flightData.isPublic || false},
       updated_at = NOW()
     WHERE id = ${flightId} AND user_id = ${userId}
@@ -173,7 +174,7 @@ export async function updateFlight(
       takeoff_runway as "takeoffRunway", sid, v1, vr, v2, toga, flaps,
       landing_runway as "landingRunway", star, brake, vapp,
       air_time as "airTime", block_time as "blockTime", land_rate as "landRate",
-      time_of_day as "timeOfDay", passengers, cargo,
+      time_of_day as "timeOfDay", passengers, cargo, route_distance as "routeDistance",
       is_public as "isPublic", created_at as "createdAt", updated_at as "updatedAt"
   `;
   if (result.length === 0) return null;

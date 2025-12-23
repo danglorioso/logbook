@@ -48,6 +48,7 @@ export interface Flight {
   timeOfDay: ("MORNING" | "MID-DAY" | "EVENING" | "NIGHT")[] | null;
   passengers: number | null;
   cargo: number | null;
+  routeDistance: number | null;
   
   // Metadata
   isPublic: boolean;

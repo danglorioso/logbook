@@ -39,6 +39,7 @@ interface Flight {
   timeOfDay: ("MORNING" | "MID-DAY" | "EVENING" | "NIGHT")[] | null;
   passengers: number | null;
   cargo: number | null;
+  routeDistance: number | null;
   isPublic: boolean;
 }
 
@@ -122,7 +123,7 @@ export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
 
         <div className="space-y-4 text-sm">
           {/* Flight Summary Header */}
-          {(flight.aircraft || flight.callsign || flight.cruiseAltitude) && (
+          {(flight.aircraft || flight.callsign || flight.airframe) && (
             <div className="flex flex-wrap gap-6 pb-3 border-b border-white/5">
               {flight.aircraft && (
                 <div>
@@ -136,10 +137,10 @@ export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
                   <div className="font-semibold text-base">{flight.callsign}</div>
                 </div>
               )}
-              {flight.cruiseAltitude && (
+              {flight.airframe && (
                 <div>
-                  <div className="text-white/40 text-xs uppercase mb-1">Cruise Altitude</div>
-                  <div className="font-semibold text-base">{flight.cruiseAltitude}</div>
+                  <div className="text-white/40 text-xs uppercase mb-1">Airframe</div>
+                  <div className="font-semibold text-base">{flight.airframe}</div>
                 </div>
               )}
             </div>
@@ -150,7 +151,7 @@ export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
 
             {/* Takeoff Group */}
             {(flight.takeoffRunway || flight.sid || flight.v1 || flight.vr || flight.v2 || flight.toga) && (
-              <div className="flex gap-x-6 border-l border-white/5 pl-6">
+              <div className="flex gap-x-6">
                 {flight.takeoffRunway && (
                   <div>
                     <div className="text-white/60 mb-1">TO Runway</div>
@@ -214,9 +215,21 @@ export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
               </div>
             )}
 
-            {/* Misc Group (Passengers, Cargo, Block Fuel) */}
-            {(flight.blockFuel !== null || flight.passengers !== null || flight.cargo !== null) && (
+            {/* Misc Group (Cruise Altitude, Block Time, Block Fuel, Passengers, Cargo) */}
+            {(flight.cruiseAltitude || flight.blockTime || flight.blockFuel !== null || flight.passengers !== null || flight.cargo !== null) && (
               <div className="flex gap-x-6 border-l border-white/5 pl-6">
+                {flight.cruiseAltitude && (
+                  <div>
+                    <div className="text-white/60 mb-1">Cruise Altitude</div>
+                    <div className="font-medium">{flight.cruiseAltitude}</div>
+                  </div>
+                )}
+                {flight.blockTime && (
+                  <div>
+                    <div className="text-white/60 mb-1">Block Time</div>
+                    <div className="font-medium">{flight.blockTime}</div>
+                  </div>
+                )}
                 {flight.blockFuel !== null && (
                   <div>
                     <div className="text-white/60 mb-1">Block Fuel</div>

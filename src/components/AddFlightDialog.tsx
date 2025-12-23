@@ -56,6 +56,7 @@ const flightSchema = z.object({
   timeOfDay: z.array(z.enum(["MORNING", "MID-DAY", "EVENING", "NIGHT"])).optional(),
   passengers: z.number().optional(),
   cargo: z.number().optional(),
+  routeDistance: z.number().optional(),
   isPublic: z.boolean().optional(),
 });
 
@@ -89,6 +90,7 @@ interface Flight {
   timeOfDay: ("MORNING" | "MID-DAY" | "EVENING" | "NIGHT")[] | string | null;
   passengers: number | null;
   cargo: number | null;
+  routeDistance: number | null;
   isPublic: boolean;
 }
 
@@ -178,6 +180,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
         : undefined,
       passengers: flight.passengers || undefined,
       cargo: flight.cargo || undefined,
+      routeDistance: flight.routeDistance || undefined,
       isPublic: flight.isPublic || false,
     } : {
       date: formatDateForInput(new Date()),
@@ -890,7 +893,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor="landRate">Rating</Label>
+                  <Label htmlFor="landRate">Landing Rating</Label>
                   <Select
                     value={watch("landRate") || ""}
                     onValueChange={(value) => setValue("landRate", value as "butter" | "great" | "acceptable" | "hard" | "wasted" | undefined)}
@@ -929,6 +932,20 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                       placeholder="0.00"
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 pointer-events-none">kg</span>
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="routeDistance">Route Distance</Label>
+                  <div className="relative">
+                    <Input
+                      id="routeDistance"
+                      type="number"
+                      step="0.01"
+                      {...register("routeDistance", { valueAsNumber: true })}
+                      className="bg-black border-white/10 pr-10"
+                      placeholder="0.00"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 pointer-events-none">nm</span>
                   </div>
                 </div>
               </div>
