@@ -39,7 +39,7 @@ export default function Home() {
           </p>
           <div className="flex gap-4 justify-center">
             <Link href="/register">
-              <Button size="lg" className="text-lg px-8 py-6 bg-blue-200 text-black">
+              <Button size="lg" className="text-lg px-8 py-6 bg-white text-black">
                 Start Logging Flights
               </Button>
             </Link>

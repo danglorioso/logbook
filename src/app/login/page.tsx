@@ -48,8 +48,9 @@ export default function LoginPage() {
       });
 
       setVerifying(true);
-    } catch (err: any) {
-      setError(err.errors?.[0]?.message || "Something went wrong. Please try again.");
+    } catch (err) {
+      const error = err as { errors?: Array<{ message?: string }>; message?: string };
+      setError(error.errors?.[0]?.message || error.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -63,21 +64,51 @@ export default function LoginPage() {
     setError("");
 
     try {
+      // Trim and clean the code
+      const cleanCode = code.trim().replace(/\s/g, "");
+      
+      if (!cleanCode || cleanCode.length < 6) {
+        setError("Please enter a valid 6-digit code");
+        setLoading(false);
+        return;
+      }
+
       // Attempt verification with the code
       const signInAttempt = await signIn.attemptFirstFactor({
         strategy: "email_code",
-        code,
+        code: cleanCode,
+      });
+
+      console.log("Sign-in attempt result:", {
+        status: signInAttempt.status,
+        createdSessionId: signInAttempt.createdSessionId,
       });
 
       if (signInAttempt.status === "complete") {
         // Set the session as active and redirect
-        await setActive({ session: signInAttempt.createdSessionId });
-        router.push("/profile");
+        if (signInAttempt.createdSessionId) {
+          await setActive({ session: signInAttempt.createdSessionId });
+          router.push("/profile");
+        } else {
+          setError("Session creation failed. Please try again.");
+        }
       } else {
-        setError("Verification incomplete. Please try again.");
+        // Log the status for debugging
+        console.log("Sign-in status:", signInAttempt.status);
+        console.log("Sign-in attempt:", signInAttempt);
+        setError(`Verification incomplete. Status: ${signInAttempt.status}. Please check the code and try again.`);
       }
-    } catch (err: any) {
-      setError(err.errors?.[0]?.message || "Invalid code. Please try again.");
+    } catch (err) {
+      const error = err as { errors?: Array<{ message?: string }>; message?: string; status?: string };
+      console.error("Verification error:", err);
+      console.error("Error details:", {
+        errors: error.errors,
+        message: error.message,
+        status: error.status,
+      });
+      // Show more detailed error message
+      const errorMessage = error.errors?.[0]?.message || error.message || "Invalid code. Please try again.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -173,7 +204,7 @@ export default function LoginPage() {
               </Button>
             </form>
             <div className="mt-6 text-center text-sm text-white/60">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link href="/register" className="text-white hover:underline">
                 Sign up
               </Link>
