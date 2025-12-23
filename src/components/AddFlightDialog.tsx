@@ -525,12 +525,24 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                   )}
                 </div>
                 <div>
-                  <Label htmlFor="cruiseAltitude">CRZ FL</Label>
-                  <Input
-                    id="cruiseAltitude"
-                    {...register("cruiseAltitude")}
-                    className="bg-black border-white/10"
-                  />
+                  <Label htmlFor="cruiseAltitude">Cruise level</Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/60 pointer-events-none">FL</span>
+                    <Input
+                      id="cruiseAltitude"
+                      {...register("cruiseAltitude", {
+                        onChange: (e) => {
+                          // Remove any existing "FL" prefix and non-numeric characters
+                          const value = e.target.value.replace(/^FL/i, '').replace(/[^0-9]/g, '');
+                          // Store with FL prefix
+                          setValue("cruiseAltitude", value ? `FL${value}` : '');
+                        }
+                      })}
+                      className="bg-black border-white/10 pl-8"
+                      placeholder=""
+                      value={watch("cruiseAltitude")?.replace(/^FL/i, '') || ''}
+                    />
+                  </div>
                 </div>
                 <div>
                   <Label htmlFor="blockFuel">Block Fuel</Label>
