@@ -53,7 +53,7 @@ export function Navigation() {
                       : "text-white/60 hover:text-white hover:bg-white/5"
                   )}
                 >
-                  Community
+                  Recent Flights
                 </Link>
                 <Link
                   href="/profile"
@@ -65,6 +65,17 @@ export function Navigation() {
                   )}
                 >
                   Profile
+                </Link>
+                <Link
+                  href="/about"
+                  className={cn(
+                    "px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                    pathname === "/about"
+                      ? "bg-white/10 text-white"
+                      : "text-white/60 hover:text-white hover:bg-white/5"
+                  )}
+                >
+                  About
                 </Link>
               </div>
 
@@ -80,7 +91,7 @@ export function Navigation() {
             </div>
           ) : (
             <div className="flex items-center gap-6">
-              {/* Community Tab for non-logged-in users */}
+              {/* Recent Flights Tab for non-logged-in users */}
               <Link
                 href="/public"
                 className={cn(
@@ -90,7 +101,18 @@ export function Navigation() {
                     : "text-white/60 hover:text-white hover:bg-white/5"
                 )}
               >
-                Community
+                Recent Flights
+              </Link>
+              <Link
+                href="/about"
+                className={cn(
+                  "px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                  pathname === "/about"
+                    ? "bg-white/10 text-white"
+                    : "text-white/60 hover:text-white hover:bg-white/5"
+                )}
+              >
+                About
               </Link>
               <div className="flex items-center gap-4">
                 <Link href="/login">

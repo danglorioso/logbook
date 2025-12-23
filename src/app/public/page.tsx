@@ -70,7 +70,7 @@ export default function PublicFlightsPage() {
 
       <div className="container mx-auto px-4 py-8 flex-1">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Public Flights</h1>
+          <h1 className="text-4xl font-bold mb-2">Recent Flights</h1>
           <p className="text-white/60">
             Discover flights shared by the community
           </p>

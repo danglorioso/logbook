@@ -147,7 +147,7 @@ function LandingPage() {
           <div className="max-w-6xl mx-auto">
             <div className="flex items-center justify-between mb-12">
               <div>
-                <h2 className="text-4xl font-bold mb-2">Latest Community Flights</h2>
+                <h2 className="text-4xl font-bold mb-2">Latest Flights</h2>
                 <p className="text-white/60">
                   See what other pilots are sharing
                 </p>
