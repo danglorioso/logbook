@@ -174,7 +174,15 @@ function LandingPage() {
                         <div className="text-sm text-white/60 mb-1">
                           {format(new Date(flight.date), "MMMM d, yyyy")}
                           {flight.username && (
-                            <span className="ml-2">by @{flight.username}</span>
+                            <span className="ml-2">
+                              by{" "}
+                              <Link
+                                href={`/user/${flight.username}`}
+                                className="hover:text-white transition-colors underline decoration-white/30 hover:decoration-white/60"
+                              >
+                                @{flight.username}
+                              </Link>
+                            </span>
                           )}
                         </div>
                         <div className="text-xl font-semibold">

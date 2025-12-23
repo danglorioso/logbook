@@ -3,7 +3,7 @@ import type { Flight, User } from "./schema";
 
 export async function getUserById(id: string): Promise<User | null> {
   const result = await sql`
-    SELECT id, email, name, created_at as "createdAt", updated_at as "updatedAt"
+    SELECT id, email, name, first_name as "firstName", last_name as "lastName", disabled, created_at as "createdAt", updated_at as "updatedAt"
     FROM "user"
     WHERE id = ${id}
   `;
@@ -12,7 +12,7 @@ export async function getUserById(id: string): Promise<User | null> {
 
 export async function getUserByEmail(email: string): Promise<User | null> {
   const result = await sql`
-    SELECT id, email, name, created_at as "createdAt", updated_at as "updatedAt"
+    SELECT id, email, name, first_name as "firstName", last_name as "lastName", disabled, created_at as "createdAt", updated_at as "updatedAt"
     FROM "user"
     WHERE email = ${email}
   `;
@@ -122,6 +122,39 @@ export async function getPublicFlights(limit = 50): Promise<Flight[]> {
     ...flight,
     timeOfDay: flight.timeOfDay ? flight.timeOfDay.split(',').filter(Boolean) as ("MORNING" | "MID-DAY" | "EVENING" | "NIGHT")[] : null,
   })) as (Flight & { username?: string; userEmail?: string })[];
+}
+
+export async function getPublicFlightsByUsername(username: string): Promise<(Flight & { username?: string; userEmail?: string })[]> {
+  const result = await sql`
+    SELECT 
+      f.id, f.user_id as "userId", f.date,
+      f.callsign, f.aircraft, f.airframe, f.departure, f.arrival, f.cruise_altitude as "cruiseAltitude",
+      f.block_fuel as "blockFuel", f.route,
+      f.takeoff_runway as "takeoffRunway", f.sid, f.v1, f.vr, f.v2, f.toga, f.flaps,
+      f.landing_runway as "landingRunway", f.star, f.brake, f.vapp,
+      f.air_time as "airTime", f.block_time as "blockTime", f.land_rate as "landRate",
+      f.time_of_day as "timeOfDay", f.passengers, f.cargo, f.route_distance as "routeDistance",
+      f.is_public as "isPublic", f.created_at as "createdAt", f.updated_at as "updatedAt",
+      u.name as "username", u.email as "userEmail", u.first_name as "firstName", u.last_name as "lastName"
+    FROM flights f
+    JOIN "user" u ON f.user_id = u.id
+    WHERE f.is_public = true AND u.name = ${username}
+    ORDER BY f.date DESC, f.created_at DESC
+  `;
+  // Parse comma-separated timeOfDay string to array
+  return (result as Array<Omit<Flight, 'timeOfDay'> & { timeOfDay: string | null; username?: string; userEmail?: string; firstName?: string | null; lastName?: string | null }>).map(flight => ({
+    ...flight,
+    timeOfDay: flight.timeOfDay ? flight.timeOfDay.split(',').filter(Boolean) as ("MORNING" | "MID-DAY" | "EVENING" | "NIGHT")[] : null,
+  })) as (Flight & { username?: string; userEmail?: string; firstName?: string | null; lastName?: string | null })[];
+}
+
+export async function getUserByUsername(username: string): Promise<(User & { firstName?: string | null; lastName?: string | null }) | null> {
+  const result = await sql`
+    SELECT id, email, name, first_name as "firstName", last_name as "lastName", disabled, created_at as "createdAt", updated_at as "updatedAt"
+    FROM "user"
+    WHERE name = ${username}
+  `;
+  return result[0] as (User & { firstName?: string | null; lastName?: string | null }) | null;
 }
 
 export async function createFlight(userId: string, flightData: Partial<Flight>): Promise<Flight> {

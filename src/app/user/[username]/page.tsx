@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { useParams } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
-import Link from "next/link";
 import { Navigation } from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { FlightCardSkeleton } from "@/components/skeletons/FlightCardSkeleton";
+import { StatsSkeleton } from "@/components/skeletons/StatsSkeleton";
 
 interface PublicFlight {
   id: string;
@@ -42,26 +43,105 @@ interface PublicFlight {
   userEmail?: string;
 }
 
-export default function PublicFlightsPage() {
+interface UserProfile {
+  id: string;
+  username: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  email: string;
+}
+
+export default function UserProfilePage() {
+  const params = useParams();
+  const username = params.username as string;
+  const [user, setUser] = useState<UserProfile | null>(null);
   const [flights, setFlights] = useState<PublicFlight[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchFlights();
-  }, []);
+    if (username) {
+      fetchUserProfile();
+    }
+  }, [username]);
 
-  const fetchFlights = async () => {
+  const fetchUserProfile = async () => {
     try {
-      const res = await fetch("/api/public");
+      const res = await fetch(`/api/user/${username}`);
       if (res.ok) {
         const data = await res.json();
-        setFlights(data);
+        setUser(data.user);
+        setFlights(data.flights);
+      } else if (res.status === 404) {
+        // User not found
+        setUser(null);
       }
     } catch (error) {
-      console.error("Failed to fetch public flights:", error);
+      console.error("Failed to fetch user profile:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex flex-col">
+        <Navigation />
+        <div className="flex-1 container mx-auto px-4 py-8">
+          <div className="mb-8">
+            <div className="h-10 bg-white/10 rounded-md w-64 mb-2 animate-pulse"></div>
+            <div className="h-5 bg-white/10 rounded-md w-48 animate-pulse"></div>
+          </div>
+          <StatsSkeleton />
+          <div className="mb-4 mt-8">
+            <div className="h-8 bg-white/10 rounded-md w-48 animate-pulse"></div>
+          </div>
+          <div className="space-y-4">
+            <FlightCardSkeleton />
+            <FlightCardSkeleton />
+            <FlightCardSkeleton />
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-black text-white flex flex-col">
+        <Navigation />
+        <div className="flex-1 container mx-auto px-4 py-8">
+          <Card className="bg-[#0a0a0a] border-white/10">
+            <CardContent className="py-12 text-center">
+              <h1 className="text-2xl font-bold mb-4">User Not Found</h1>
+              <p className="text-white/60">
+                The user &quot;{username}&quot; does not exist or has no public flights.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  const displayName = user.firstName && user.lastName
+    ? `${user.firstName} ${user.lastName}`
+    : user.firstName || user.username || "Pilot";
+
+  const stats = {
+    totalFlights: flights.length,
+    totalHours: flights.reduce((acc, f) => {
+      if (f.blockTime) {
+        const [hours, mins] = f.blockTime.split(":").map(Number);
+        return acc + hours + mins / 60;
+      }
+      return acc;
+    }, 0),
+    totalMiles: flights.reduce((acc, f) => {
+      const distance = typeof f.routeDistance === 'number' ? f.routeDistance : parseFloat(f.routeDistance || '0') || 0;
+      return acc + distance;
+    }, 0),
   };
 
   return (
@@ -69,20 +149,50 @@ export default function PublicFlightsPage() {
       <Navigation />
 
       <div className="container mx-auto px-4 py-8 flex-1">
+        {/* Profile Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Public Flights</h1>
+          <h1 className="text-4xl font-bold mb-2">
+            {displayName}&apos;s Flights
+          </h1>
           <p className="text-white/60">
-            Discover flights shared by the community
+            @{user.username}
           </p>
         </div>
 
-        {loading ? (
-          <div className="space-y-4">
-            <FlightCardSkeleton />
-            <FlightCardSkeleton />
-            <FlightCardSkeleton />
-          </div>
-        ) : flights.length === 0 ? (
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <Card className="bg-[#0a0a0a] border-white/10">
+            <CardHeader>
+              <CardTitle className="text-sm text-white/60">Total Flights</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{stats.totalFlights}</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-[#0a0a0a] border-white/10">
+            <CardHeader>
+              <CardTitle className="text-sm text-white/60">Total Hours</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{stats.totalHours.toFixed(1)}</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-[#0a0a0a] border-white/10">
+            <CardHeader>
+              <CardTitle className="text-sm text-white/60">Total Miles</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{stats.totalMiles.toLocaleString()}</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Flights Section */}
+        <div className="mb-4">
+          <h2 className="text-2xl font-bold">Public Flights</h2>
+        </div>
+
+        {flights.length === 0 ? (
           <Card className="bg-[#0a0a0a] border-white/10">
             <CardContent className="py-12 text-center">
               <p className="text-white/60">No public flights yet.</p>
@@ -98,17 +208,6 @@ export default function PublicFlightsPage() {
                     <div>
                       <div className="text-sm text-white/60 mb-1">
                         {format(new Date(flight.date), "MMMM d, yyyy")}
-                        {flight.username && (
-                          <span className="ml-2">
-                            by{" "}
-                            <Link
-                              href={`/user/${flight.username}`}
-                              className="hover:text-white transition-colors underline decoration-white/30 hover:decoration-white/60"
-                            >
-                              @{flight.username}
-                            </Link>
-                          </span>
-                        )}
                       </div>
                       <div className="text-xl font-semibold">
                         {flight.departure || "N/A"} → {flight.arrival || "N/A"}
@@ -209,12 +308,12 @@ export default function PublicFlightsPage() {
                         </div>
                       )}
 
-                      {/* Misc Group (Cruise Altitude, Block Time, Block Fuel, Passengers, Cargo) */}
-                      {(flight.cruiseAltitude || flight.blockTime || flight.blockFuel !== null || flight.passengers !== null || flight.cargo !== null) && (
+                      {/* Misc Group (Cruise Altitude, Block Time, Block Fuel, Passengers, Cargo, Route Distance) */}
+                      {(flight.cruiseAltitude || flight.blockTime || flight.blockFuel !== null || flight.passengers !== null || flight.cargo !== null || flight.routeDistance !== null) && (
                         <div className="flex gap-x-6 border-l border-white/5 pl-6">
                           {flight.cruiseAltitude && (
                             <div>
-                              <div className="text-white/60 mb-1">Cruise Altitude</div>
+                              <div className="text-white/60 mb-1">CRZ FL</div>
                               <div className="font-medium">{flight.cruiseAltitude}</div>
                             </div>
                           )}
@@ -227,7 +326,7 @@ export default function PublicFlightsPage() {
                           {flight.blockFuel !== null && (
                             <div>
                               <div className="text-white/60 mb-1">Block Fuel</div>
-                              <div className="font-medium">{flight.blockFuel} lbs</div>
+                              <div className="font-medium">{flight.blockFuel} kg</div>
                             </div>
                           )}
                           {flight.passengers !== null && (
@@ -242,13 +341,19 @@ export default function PublicFlightsPage() {
                               <div className="font-medium">{flight.cargo} kg</div>
                             </div>
                           )}
+                          {flight.routeDistance !== null && (
+                            <div>
+                              <div className="text-white/60 mb-1">Route Distance</div>
+                              <div className="font-medium">{flight.routeDistance} nm</div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
 
                     {/* Route */}
                     {flight.route && (
-                      <div className="border-t border-white/5 pt-4">
+                      <div className="w-full border-t border-white/5 pt-3 mt-2">
                         <div className="text-white/60 mb-1">Route</div>
                         <div className="font-medium">{flight.route}</div>
                       </div>
@@ -264,5 +369,4 @@ export default function PublicFlightsPage() {
     </div>
   );
 }
-
 
