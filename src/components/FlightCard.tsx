@@ -81,10 +81,10 @@ export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <TooltipProvider>
+            <TooltipProvider delayDuration={200}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center justify-center h-9 w-9">
+                  <div className="flex items-center justify-center h-9 w-9 cursor-pointer hover:bg-white/5 rounded-md transition-colors">
                     {flight.isPublic ? (
                       <Eye className="h-4 w-4 text-white/60" />
                     ) : (
