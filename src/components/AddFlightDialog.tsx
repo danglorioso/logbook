@@ -106,10 +106,13 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
   const [currentTab, setCurrentTab] = useState("general");
   const [aircraftSuggestions, setAircraftSuggestions] = useState<string[]>([]);
   const [showAircraftSuggestions, setShowAircraftSuggestions] = useState(false);
+  const [isAircraftFocused, setIsAircraftFocused] = useState(false);
   const [departureSuggestions, setDepartureSuggestions] = useState<Array<{icao: string; name: string; city: string}>>([]);
   const [showDepartureSuggestions, setShowDepartureSuggestions] = useState(false);
+  const [isDepartureFocused, setIsDepartureFocused] = useState(false);
   const [arrivalSuggestions, setArrivalSuggestions] = useState<Array<{icao: string; name: string; city: string}>>([]);
   const [showArrivalSuggestions, setShowArrivalSuggestions] = useState(false);
+  const [isArrivalFocused, setIsArrivalFocused] = useState(false);
   const [airports, setAirports] = useState<Array<{icao: string; name: string; city: string; country: string}>>([]);
   const [airTimeHours, setAirTimeHours] = useState<string>("");
   const [airTimeMinutes, setAirTimeMinutes] = useState<string>("");
@@ -207,9 +210,9 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
   const departureAirportName = getAirportName(departureValue);
   const arrivalAirportName = getAirportName(arrivalValue);
 
-  // Update aircraft suggestions when aircraft value changes
+  // Update aircraft suggestions when aircraft value changes (only if focused)
   React.useEffect(() => {
-    if (aircraftValue) {
+    if (aircraftValue && isAircraftFocused) {
       const filtered = AIRCRAFT_DATABASE.filter(aircraft =>
         aircraft.toLowerCase().includes(aircraftValue.toLowerCase())
       );
@@ -217,13 +220,15 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
       setShowAircraftSuggestions(filtered.length > 0);
     } else {
       setAircraftSuggestions([]);
-      setShowAircraftSuggestions(false);
+      if (!isAircraftFocused) {
+        setShowAircraftSuggestions(false);
+      }
     }
-  }, [aircraftValue]);
+  }, [aircraftValue, isAircraftFocused]);
 
-  // Update departure suggestions
+  // Update departure suggestions (only if focused)
   React.useEffect(() => {
-    if (departureValue && airports.length > 0) {
+    if (departureValue && airports.length > 0 && isDepartureFocused) {
       const filtered = searchAirports(departureValue, airports.map(a => ({
         icao: a.icao,
         name: a.name,
@@ -240,13 +245,15 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
       setShowDepartureSuggestions(filtered.length > 0 && departureValue.length > 0);
     } else {
       setDepartureSuggestions([]);
-      setShowDepartureSuggestions(false);
+      if (!isDepartureFocused) {
+        setShowDepartureSuggestions(false);
+      }
     }
-  }, [departureValue, airports]);
+  }, [departureValue, airports, isDepartureFocused]);
 
-  // Update arrival suggestions
+  // Update arrival suggestions (only if focused)
   React.useEffect(() => {
-    if (arrivalValue && airports.length > 0) {
+    if (arrivalValue && airports.length > 0 && isArrivalFocused) {
       const filtered = searchAirports(arrivalValue, airports.map(a => ({
         icao: a.icao,
         name: a.name,
@@ -263,9 +270,11 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
       setShowArrivalSuggestions(filtered.length > 0 && arrivalValue.length > 0);
     } else {
       setArrivalSuggestions([]);
-      setShowArrivalSuggestions(false);
+      if (!isArrivalFocused) {
+        setShowArrivalSuggestions(false);
+      }
     }
-  }, [arrivalValue, airports]);
+  }, [arrivalValue, airports, isArrivalFocused]);
 
   const onSubmit = async (data: FlightFormData) => {
     setLoading(true);
@@ -391,6 +400,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
         : undefined,
         passengers: flight.passengers || undefined,
         cargo: flight.cargo || undefined,
+        routeDistance: flight.routeDistance || undefined,
         isPublic: flight.isPublic || false,
       });
     } else if (open && !flight) {
@@ -497,11 +507,19 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                   <Label htmlFor="aircraft">Aircraft</Label>
                   <Input
                     id="aircraft"
-                    {...register("aircraft")}
+                    {...register("aircraft", {
+                      onChange: (e) => {
+                        setValue("aircraft", e.target.value);
+                        if (isAircraftFocused) {
+                          setShowAircraftSuggestions(true);
+                        }
+                      }
+                    })}
                     className="bg-black border-white/10"
                     placeholder="Type to search or enter custom aircraft"
                     autoComplete="off"
                     onFocus={() => {
+                      setIsAircraftFocused(true);
                       if (aircraftValue) {
                         const filtered = AIRCRAFT_DATABASE.filter(aircraft =>
                           aircraft.toLowerCase().includes(aircraftValue.toLowerCase())
@@ -511,6 +529,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                       }
                     }}
                     onBlur={() => {
+                      setIsAircraftFocused(false);
                       // Delay hiding suggestions to allow clicks
                       setTimeout(() => setShowAircraftSuggestions(false), 200);
                     }}
@@ -561,7 +580,11 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                     })}
                     className="bg-black border-white/10"
                     autoComplete="off"
+                    onFocus={() => {
+                      setIsDepartureFocused(true);
+                    }}
                     onBlur={() => {
+                      setIsDepartureFocused(false);
                       setTimeout(() => setShowDepartureSuggestions(false), 200);
                     }}
                   />
@@ -603,7 +626,11 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                     })}
                     className="bg-black border-white/10"
                     autoComplete="off"
+                    onFocus={() => {
+                      setIsArrivalFocused(true);
+                    }}
                     onBlur={() => {
+                      setIsArrivalFocused(false);
                       setTimeout(() => setShowArrivalSuggestions(false), 200);
                     }}
                   />

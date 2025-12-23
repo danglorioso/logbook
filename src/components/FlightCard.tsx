@@ -245,7 +245,7 @@ export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
                 {flight.cargo !== null && (
                   <div>
                     <div className="text-white/60 mb-1">Cargo</div>
-                    <div className="font-medium">{flight.cargo} lbs</div>
+                    <div className="font-medium">{flight.cargo} kg</div>
                   </div>
                 )}
               </div>

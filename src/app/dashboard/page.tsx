@@ -120,7 +120,10 @@ export default function ProfilePage() {
       }
       return acc;
     }, 0),
-    totalMiles: 0, // Calculate from routes later
+    totalMiles: flights.reduce((acc, f) => {
+      const distance = typeof f.routeDistance === 'number' ? f.routeDistance : parseFloat(f.routeDistance || '0') || 0;
+      return acc + distance;
+    }, 0),
   };
 
   return (
