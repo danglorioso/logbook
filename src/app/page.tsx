@@ -12,6 +12,8 @@ import { Navigation } from "@/components/Navigation";
 import { AddFlightDialog } from "@/components/AddFlightDialog";
 import { FlightCard } from "@/components/FlightCard";
 import Footer from "@/components/Footer";
+import { FlightCardSkeleton } from "@/components/skeletons/FlightCardSkeleton";
+import { StatsSkeleton } from "@/components/skeletons/StatsSkeleton";
 
 interface Flight {
   id: string;
@@ -198,7 +200,7 @@ function DashboardContent() {
     }
   };
 
-  if (!userLoaded || loading) {
+  if (!userLoaded) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-white/60">Loading...</div>
@@ -241,30 +243,36 @@ function DashboardContent() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <Card className="bg-[#0a0a0a] border-white/10">
-            <CardHeader>
-              <CardTitle className="text-sm text-white/60">Total Flights</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.totalFlights}</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-[#0a0a0a] border-white/10">
-            <CardHeader>
-              <CardTitle className="text-sm text-white/60">Total Hours</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.totalHours.toFixed(1)}</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-[#0a0a0a] border-white/10">
-            <CardHeader>
-              <CardTitle className="text-sm text-white/60">Total Miles</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.totalMiles.toLocaleString()}</div>
-            </CardContent>
-          </Card>
+          {loading ? (
+            <StatsSkeleton />
+          ) : (
+            <>
+              <Card className="bg-[#0a0a0a] border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-sm text-white/60">Total Flights</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">{stats.totalFlights}</div>
+                </CardContent>
+              </Card>
+              <Card className="bg-[#0a0a0a] border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-sm text-white/60">Total Hours</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">{stats.totalHours.toFixed(1)}</div>
+                </CardContent>
+              </Card>
+              <Card className="bg-[#0a0a0a] border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-sm text-white/60">Total Miles</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">{stats.totalMiles.toLocaleString()}</div>
+                </CardContent>
+              </Card>
+            </>
+          )}
         </div>
 
         {/* Flights Section */}
@@ -282,7 +290,13 @@ function DashboardContent() {
           </Button>
         </div>
 
-        {flights.length === 0 ? (
+        {loading ? (
+          <div className="space-y-4">
+            <FlightCardSkeleton />
+            <FlightCardSkeleton />
+            <FlightCardSkeleton />
+          </div>
+        ) : flights.length === 0 ? (
           <Card className="bg-[#0a0a0a] border-white/10">
             <CardContent className="py-12 text-center">
               <p className="text-white/60 mb-4">No flights logged yet.</p>

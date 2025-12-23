@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
 import { Navigation } from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { FlightCardSkeleton } from "@/components/skeletons/FlightCardSkeleton";
 
 interface PublicFlight {
   id: string;
@@ -75,7 +76,11 @@ export default function PublicFlightsPage() {
         </div>
 
         {loading ? (
-          <div className="text-center py-12 text-white/60">Loading...</div>
+          <div className="space-y-4">
+            <FlightCardSkeleton />
+            <FlightCardSkeleton />
+            <FlightCardSkeleton />
+          </div>
         ) : flights.length === 0 ? (
           <Card className="bg-[#0a0a0a] border-white/10">
             <CardContent className="py-12 text-center">
