@@ -68,7 +68,7 @@ function LandingPage() {
           </p>
           <div className="flex gap-4 justify-center">
             <Link href="/register">
-              <Button size="lg" className="text-lg px-8 py-6 bg-white text-black">
+              <Button size="lg" className="text-lg px-8 py-6 bg-white text-black border-2 border-transparent">
                 Start Logging Flights
               </Button>
             </Link>
@@ -76,7 +76,7 @@ function LandingPage() {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="text-lg px-8 py-6 border-white/30 text-white hover:bg-white/10"
+                className="text-lg px-8 py-6 border-2 border-white/30 text-white hover:bg-white/10"
               >
                 View Public Flights
               </Button>
