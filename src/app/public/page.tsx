@@ -1,11 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
-import { AnimatedPlane } from "@/components/AnimatedPlane";
+import { Navigation } from "@/components/Navigation";
 
 interface PublicFlight {
   id: string;
@@ -65,27 +63,7 @@ export default function PublicFlightsPage() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Navigation */}
-      <nav className="border-b border-white/10">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group">
-            <AnimatedPlane size="sm" />
-            <span className="text-xl font-semibold">Logbook</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/login">
-              <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
-                Sign In
-              </Button>
-            </Link>
-            <Link href="/register">
-              <Button className="bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg">
-                Get Started
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Navigation />
 
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">

@@ -1,15 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useUser, useClerk } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, LogOut } from "lucide-react";
+import { Plus } from "lucide-react";
 import { AddFlightDialog } from "@/components/AddFlightDialog";
 import { FlightCard } from "@/components/FlightCard";
-import Link from "next/link";
-import { AnimatedPlane } from "@/components/AnimatedPlane";
+import { Navigation } from "@/components/Navigation";
 
 interface Flight {
   id: string;
@@ -45,7 +44,6 @@ interface Flight {
 
 export default function ProfilePage() {
   const { user, isLoaded: userLoaded } = useUser();
-  const { signOut } = useClerk();
   const router = useRouter();
   const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(true);
@@ -70,11 +68,6 @@ export default function ProfilePage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleLogout = async () => {
-    await signOut();
-    router.push("/");
   };
 
   const handleFlightAdded = () => {
@@ -129,25 +122,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Navigation */}
-      <nav className="border-b border-white/10">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group">
-            <AnimatedPlane size="sm" />
-            <span className="text-xl font-semibold">Logbook</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <Button 
-              variant="outline" 
-              onClick={handleLogout}
-              className="border-white/30 text-white hover:bg-white/10"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
-          </div>
-        </div>
-      </nav>
+      <Navigation />
 
       <div className="container mx-auto px-4 py-8">
         {/* Profile Header */}
