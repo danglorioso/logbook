@@ -62,7 +62,6 @@ body {
   }
 }
 
-.group:hover .plane-fly-animation.plane-animating,
 .plane-fly-animation.plane-animating {
   animation: flyAway 1s ease-in-out;
 }

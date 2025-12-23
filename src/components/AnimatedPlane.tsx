@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { Plane } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -10,9 +10,8 @@ interface AnimatedPlaneProps {
 }
 
 export function AnimatedPlane({ className, size = "md" }: AnimatedPlaneProps) {
-  const [isAnimating, setIsAnimating] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const planeRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const planeWrapperRef = useRef<HTMLDivElement>(null);
 
   const sizeClasses = {
     sm: "h-6 w-6",
@@ -22,35 +21,34 @@ export function AnimatedPlane({ className, size = "md" }: AnimatedPlaneProps) {
 
   useEffect(() => {
     const handleMouseEnter = () => {
-      if (!isAnimating) {
-        setIsAnimating(true);
-        // Clear any existing timeout
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-        }
-        // Remove the animation class after animation completes (1s)
-        timeoutRef.current = setTimeout(() => {
-          setIsAnimating(false);
-        }, 1000);
-      }
+      const planeWrapper = planeWrapperRef.current;
+      if (!planeWrapper) return;
+
+      // Remove animation class to reset
+      planeWrapper.classList.remove('plane-animating');
+      
+      // Force reflow to ensure the class removal is processed
+      void planeWrapper.offsetWidth;
+      
+      // Add animation class back to restart animation
+      planeWrapper.classList.add('plane-animating');
     };
 
     // Find the parent group element
-    const parentGroup = planeRef.current?.closest('.group');
+    const parentGroup = containerRef.current?.closest('.group');
     if (parentGroup) {
       parentGroup.addEventListener('mouseenter', handleMouseEnter);
       return () => {
         parentGroup.removeEventListener('mouseenter', handleMouseEnter);
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-        }
       };
     }
-  }, [isAnimating]);
+  }, []);
 
   return (
-    <div ref={planeRef} className="relative inline-block">
-      <Plane className={cn(sizeClasses[size], "plane-fly-animation", isAnimating && "plane-animating", className)} />
+    <div ref={containerRef} className="relative inline-block">
+      <div ref={planeWrapperRef} className={cn("plane-fly-animation", className)}>
+        <Plane className={sizeClasses[size]} />
+      </div>
     </div>
   );
 }
