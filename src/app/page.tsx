@@ -17,7 +17,7 @@ export default function Home() {
               <Button variant="ghost">Sign In</Button>
             </Link>
             <Link href="/register">
-              <Button>Get Started</Button>
+              <Button className="bg-white text-black font-semibold">Get Started</Button>
             </Link>
           </div>
         </div>
@@ -29,7 +29,7 @@ export default function Home() {
           <h1 className="text-6xl md:text-7xl font-bold mb-6 tracking-tight">
             Track Your
             <br />
-            <span className="text-white/80">Flight Simulator</span>
+            <span className="text-blue-200/80">Flight Simulator</span>
             <br />
             Adventures
           </h1>
@@ -39,7 +39,7 @@ export default function Home() {
           </p>
           <div className="flex gap-4 justify-center">
             <Link href="/register">
-              <Button size="lg" className="text-lg px-8 py-6">
+              <Button size="lg" className="text-lg px-8 py-6 bg-blue-200 text-black">
                 Start Logging Flights
               </Button>
             </Link>
@@ -72,7 +72,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-semibold">Route Mapping</h3>
               <p className="text-white/60">
-                Visualize your flight paths and see where you've been.
+                Visualize your flight paths and see where you&apos;ve been.
               </p>
             </div>
             <div className="space-y-4">
@@ -105,7 +105,7 @@ export default function Home() {
             Join the community of flight simulator enthusiasts tracking their journeys.
           </p>
           <Link href="/register">
-            <Button size="lg" className="text-lg px-8 py-6">
+            <Button size="lg" className="text-lg px-8 py-6 bg-white text-black font-semibold">
               Create Your Account
             </Button>
           </Link>
