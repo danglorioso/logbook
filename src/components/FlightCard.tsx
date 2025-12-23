@@ -119,19 +119,31 @@ export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
         </div>
 
         <div className="space-y-4 text-sm">
-          {/* Departure/Arrival Header */}
-          {(flight.departure || flight.arrival) && (
-            <div className="flex gap-8 pb-3 border-b border-white/5">
-              {flight.departure && (
+          {/* Flight Summary Header */}
+          {(flight.aircraft || flight.callsign || flight.totalDuration || flight.cruiseAltitude) && (
+            <div className="flex flex-wrap gap-6 pb-3 border-b border-white/5">
+              {flight.aircraft && (
                 <div>
-                  <div className="text-white/40 text-xs uppercase mb-1">Departure</div>
-                  <div className="font-semibold text-base">{flight.departure}</div>
+                  <div className="text-white/40 text-xs uppercase mb-1">Aircraft</div>
+                  <div className="font-semibold text-base">{flight.aircraft}</div>
                 </div>
               )}
-              {flight.arrival && (
+              {flight.callsign && (
                 <div>
-                  <div className="text-white/40 text-xs uppercase mb-1">Arrival</div>
-                  <div className="font-semibold text-base">{flight.arrival}</div>
+                  <div className="text-white/40 text-xs uppercase mb-1">Callsign</div>
+                  <div className="font-semibold text-base">{flight.callsign}</div>
+                </div>
+              )}
+              {flight.totalDuration && (
+                <div>
+                  <div className="text-white/40 text-xs uppercase mb-1">Duration</div>
+                  <div className="font-semibold text-base">{flight.totalDuration}</div>
+                </div>
+              )}
+              {flight.cruiseAltitude && (
+                <div>
+                  <div className="text-white/40 text-xs uppercase mb-1">Cruise Altitude</div>
+                  <div className="font-semibold text-base">{flight.cruiseAltitude}</div>
                 </div>
               )}
             </div>
@@ -139,25 +151,6 @@ export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
 
           {/* Main Content */}
           <div className="flex flex-wrap gap-x-6 gap-y-4">
-            {/* General Group */}
-            <div className="flex gap-x-6">
-              <div>
-                <div className="text-white/60 mb-1">Aircraft</div>
-                <div className="font-medium">{flight.aircraft || "N/A"}</div>
-              </div>
-              <div>
-                <div className="text-white/60 mb-1">Callsign</div>
-                <div className="font-medium">{flight.callsign || "N/A"}</div>
-              </div>
-              <div>
-                <div className="text-white/60 mb-1">Duration</div>
-                <div className="font-medium">{flight.totalDuration || "N/A"}</div>
-              </div>
-              <div>
-                <div className="text-white/60 mb-1">Cruise Altitude</div>
-                <div className="font-medium">{flight.cruiseAltitude || "N/A"}</div>
-              </div>
-            </div>
 
             {/* Takeoff Group */}
             {(flight.takeoffRunway || flight.sid || flight.v1 || flight.vr || flight.v2 || flight.toga) && (
