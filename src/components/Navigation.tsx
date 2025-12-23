@@ -55,6 +55,17 @@ export function Navigation() {
                 >
                   Community
                 </Link>
+                <Link
+                  href="/profile"
+                  className={cn(
+                    "px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                    pathname === "/profile"
+                      ? "bg-white/10 text-white"
+                      : "text-white/60 hover:text-white hover:bg-white/5"
+                  )}
+                >
+                  Profile
+                </Link>
               </div>
 
               {/* Sign Out Button */}

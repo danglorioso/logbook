@@ -6,7 +6,10 @@ export const sql = neon(process.env.DATABASE_URL!);
 export interface User {
   id: string;
   email: string;
-  name: string | null;
+  name: string | null; // username
+  firstName: string | null;
+  lastName: string | null;
+  disabled: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

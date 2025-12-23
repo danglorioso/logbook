@@ -37,9 +37,44 @@ export async function upsertUser(id: string, email: string, username?: string): 
       email = EXCLUDED.email,
       name = EXCLUDED.name,
       updated_at = NOW()
-    RETURNING id, email, name, created_at as "createdAt", updated_at as "updatedAt"
+    RETURNING id, email, name, first_name as "firstName", last_name as "lastName", disabled, created_at as "createdAt", updated_at as "updatedAt"
   `;
   return result[0] as User;
+}
+
+export async function updateUserProfile(
+  id: string,
+  updates: {
+    username?: string;
+    firstName?: string;
+    lastName?: string;
+    disabled?: boolean;
+  }
+): Promise<User | null> {
+  // Get current user to preserve values not being updated
+  const currentUser = await getUserById(id);
+  if (!currentUser) {
+    return null;
+  }
+
+  // Use the provided updates or keep current values
+  const name = updates.username !== undefined ? updates.username : currentUser.name;
+  const firstName = updates.firstName !== undefined ? updates.firstName : currentUser.firstName;
+  const lastName = updates.lastName !== undefined ? updates.lastName : currentUser.lastName;
+  const disabled = updates.disabled !== undefined ? updates.disabled : currentUser.disabled;
+
+  const result = await sql`
+    UPDATE "user"
+    SET 
+      name = ${name},
+      first_name = ${firstName},
+      last_name = ${lastName},
+      disabled = ${disabled},
+      updated_at = NOW()
+    WHERE id = ${id}
+    RETURNING id, email, name, first_name as "firstName", last_name as "lastName", disabled, created_at as "createdAt", updated_at as "updatedAt"
+  `;
+  return result[0] as User | null;
 }
 
 export async function getFlightsByUserId(userId: string): Promise<Flight[]> {

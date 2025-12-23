@@ -64,10 +64,10 @@ export default function PublicFlightsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white flex flex-col">
       <Navigation />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 flex-1">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Public Flights</h1>
           <p className="text-white/60">

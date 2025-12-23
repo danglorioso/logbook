@@ -49,7 +49,7 @@ interface Flight {
 
 function LandingPage() {
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white flex flex-col">
       <Navigation />
 
       {/* Hero Section */}
@@ -157,12 +157,26 @@ function DashboardContent() {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [editingFlight, setEditingFlight] = useState<Flight | null>(null);
+  const [userProfile, setUserProfile] = useState<{ firstName?: string | null; lastName?: string | null; name?: string | null } | null>(null);
 
   useEffect(() => {
     if (userLoaded && user) {
       fetchFlights();
+      fetchUserProfile();
     }
   }, [userLoaded, user]);
+
+  const fetchUserProfile = async () => {
+    try {
+      const res = await fetch("/api/profile");
+      if (res.ok) {
+        const data = await res.json();
+        setUserProfile(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user profile:", error);
+    }
+  };
 
   const fetchFlights = async () => {
     try {
@@ -229,14 +243,29 @@ function DashboardContent() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white flex flex-col">
       <Navigation />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 flex-1">
         {/* Profile Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">
-            {(user.username || user.firstName || user.fullName || "Pilot")}&apos;s Flights
+            {(() => {
+              if (userProfile?.firstName && userProfile?.lastName) {
+                return `${userProfile.firstName} ${userProfile.lastName}`;
+              } else if (userProfile?.firstName) {
+                return userProfile.firstName;
+              } else if (userProfile?.name) {
+                return userProfile.name;
+              } else if (user.username) {
+                return user.username;
+              } else if (user.firstName) {
+                return user.firstName;
+              } else if (user.fullName) {
+                return user.fullName;
+              }
+              return "Pilot";
+            })()}&apos;s Flights
           </h1>
           <p className="text-white/60">{user.primaryEmailAddress?.emailAddress}</p>
         </div>
