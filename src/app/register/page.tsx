@@ -13,7 +13,7 @@ import { Plane } from "lucide-react";
 export default function RegisterPage() {
   const { isLoaded, signUp, setActive } = useSignUp();
   const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [code, setCode] = useState("");
   const [verifying, setVerifying] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -31,7 +31,7 @@ export default function RegisterPage() {
       // Start the sign-up process
       await signUp.create({
         emailAddress: email,
-        firstName: name,
+        username: username,
       });
 
       // Prepare email code verification - sends OTP to email
@@ -80,6 +80,13 @@ export default function RegisterPage() {
         // Set the session as active and redirect
         if (signUpAttempt.createdSessionId) {
           await setActive({ session: signUpAttempt.createdSessionId });
+          // Sync username to database
+          try {
+            await fetch("/api/users/sync", { method: "POST" });
+          } catch (syncError) {
+            console.error("Failed to sync user:", syncError);
+            // Continue anyway - sync is not critical
+          }
           router.push("/profile");
         } else {
           setError("Session creation failed. Please try signing in.");
@@ -99,6 +106,13 @@ export default function RegisterPage() {
           if (signUpAttempt.createdSessionId) {
             try {
               await setActive({ session: signUpAttempt.createdSessionId });
+              // Sync username to database
+              try {
+                await fetch("/api/users/sync", { method: "POST" });
+              } catch (syncError) {
+                console.error("Failed to sync user:", syncError);
+                // Continue anyway - sync is not critical
+              }
               router.push("/profile");
             } catch (activeErr) {
               const activeError = activeErr as { errors?: Array<{ message?: string }>; message?: string };
@@ -211,13 +225,13 @@ export default function RegisterPage() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="username">Username</Label>
                 <Input
-                  id="name"
+                  id="username"
                   type="text"
-                  placeholder="John Doe"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  placeholder=""
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                   className="bg-black border-white/10"
                 />
@@ -227,7 +241,7 @@ export default function RegisterPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder=""
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -239,7 +253,7 @@ export default function RegisterPage() {
               )}
               {/* Clerk CAPTCHA element */}
               <div id="clerk-captcha" className="flex justify-center my-4"></div>
-              <Button type="submit" className="w-full" disabled={loading || !isLoaded}>
+              <Button type="submit" className="w-full bg-white text-black" disabled={loading || !isLoaded}>
                 {loading ? "Sending..." : "Send Verification Code"}
               </Button>
             </form>

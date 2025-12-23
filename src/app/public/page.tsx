@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plane } from "lucide-react";
-import { FlightCard } from "@/components/FlightCard";
 import { format } from "date-fns";
 
 interface PublicFlight {
@@ -35,7 +34,7 @@ interface PublicFlight {
   passengers: number | null;
   cargo: number | null;
   isPublic: boolean;
-  userName?: string;
+  username?: string;
   userEmail?: string;
 }
 
@@ -105,8 +104,8 @@ export default function PublicFlightsPage() {
                   <div className="mb-4">
                     <div className="text-sm text-white/60 mb-1">
                       {format(new Date(flight.date), "MMMM d, yyyy")}
-                      {flight.userName && (
-                        <span className="ml-2">by {flight.userName}</span>
+                      {flight.username && (
+                        <span className="ml-2">by @{flight.username}</span>
                       )}
                     </div>
                     <div className="text-xl font-semibold">

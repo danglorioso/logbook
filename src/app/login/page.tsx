@@ -147,7 +147,7 @@ export default function LoginPage() {
                 {error && (
                   <p className="text-sm text-red-400">{error}</p>
                 )}
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button type="submit" className="w-full bg-white text-black" disabled={loading}>
                   {loading ? "Verifying..." : "Verify Code"}
                 </Button>
                 <Button
@@ -199,7 +199,7 @@ export default function LoginPage() {
               )}
               {/* Clerk CAPTCHA element */}
               <div id="clerk-captcha" className="flex justify-center my-4"></div>
-              <Button type="submit" className="w-full" disabled={loading || !isLoaded}>
+              <Button type="submit" className="w-full bg-white text-black" disabled={loading || !isLoaded}>
                 {loading ? "Sending..." : "Send Verification Code"}
               </Button>
             </form>

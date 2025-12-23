@@ -29,6 +29,20 @@ export async function createUser(email: string, name?: string): Promise<User> {
   return result[0] as User;
 }
 
+export async function upsertUser(id: string, email: string, username?: string): Promise<User> {
+  const result = await sql`
+    INSERT INTO "user" (id, email, name, created_at, updated_at)
+    VALUES (${id}, ${email}, ${username || null}, NOW(), NOW())
+    ON CONFLICT (id) 
+    DO UPDATE SET 
+      email = EXCLUDED.email,
+      name = EXCLUDED.name,
+      updated_at = NOW()
+    RETURNING id, email, name, created_at as "createdAt", updated_at as "updatedAt"
+  `;
+  return result[0] as User;
+}
+
 export async function getFlightsByUserId(userId: string): Promise<Flight[]> {
   const result = await sql`
     SELECT 
@@ -58,7 +72,7 @@ export async function getPublicFlights(limit = 50): Promise<Flight[]> {
       f.total_duration as "totalDuration", f.land_rate as "landRate",
       f.time_of_day as "timeOfDay", f.passengers, f.cargo,
       f.is_public as "isPublic", f.created_at as "createdAt", f.updated_at as "updatedAt",
-      u.name as "userName", u.email as "userEmail"
+      u.name as "username", u.email as "userEmail"
     FROM flights f
     JOIN "user" u ON f.user_id = u.id
     WHERE f.is_public = true
