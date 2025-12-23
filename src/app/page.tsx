@@ -14,6 +14,7 @@ import { FlightCard } from "@/components/FlightCard";
 import Footer from "@/components/Footer";
 import { FlightCardSkeleton } from "@/components/skeletons/FlightCardSkeleton";
 import { StatsSkeleton } from "@/components/skeletons/StatsSkeleton";
+import { format } from "date-fns";
 
 interface Flight {
   id: string;
@@ -47,7 +48,62 @@ interface Flight {
   isPublic: boolean;
 }
 
+interface PublicFlight {
+  id: string;
+  date: string;
+  callsign: string | null;
+  aircraft: string | null;
+  airframe: string | null;
+  departure: string | null;
+  arrival: string | null;
+  cruiseAltitude: string | null;
+  blockFuel: number | null;
+  route: string | null;
+  takeoffRunway: string | null;
+  sid: string | null;
+  v1: string | null;
+  vr: string | null;
+  v2: string | null;
+  toga: boolean;
+  flaps: string | null;
+  landingRunway: string | null;
+  star: string | null;
+  brake: "LOW" | "MED" | "MAX" | null;
+  vapp: string | null;
+  airTime: string | null;
+  blockTime: string | null;
+  landRate: "butter" | "great" | "acceptable" | "hard" | "wasted" | null;
+  timeOfDay: ("MORNING" | "MID-DAY" | "EVENING" | "NIGHT")[] | null;
+  passengers: number | null;
+  cargo: number | null;
+  routeDistance: number | null;
+  isPublic: boolean;
+  username?: string;
+  userEmail?: string;
+}
+
 function LandingPage() {
+  const [publicFlights, setPublicFlights] = useState<PublicFlight[]>([]);
+  const [loadingFlights, setLoadingFlights] = useState(true);
+
+  useEffect(() => {
+    const fetchPublicFlights = async () => {
+      try {
+        const res = await fetch("/api/public?limit=3");
+        if (res.ok) {
+          const data = await res.json();
+          setPublicFlights(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch public flights:", error);
+      } finally {
+        setLoadingFlights(false);
+      }
+    };
+
+    fetchPublicFlights();
+  }, []);
+
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
       <Navigation />
@@ -64,7 +120,7 @@ function LandingPage() {
           </h1>
           <p className="text-xl text-white/60 mb-12 max-w-2xl mx-auto leading-relaxed">
             Log every flight, track your progress, and share your journeys with 
-            the flight simulator community. Built for pilots who take simulation seriously.
+            the flight simulator community. Built for flight simulator enthusiasts.
           </p>
           <div className="flex gap-4 justify-center">
             <Link href="/register">
@@ -84,6 +140,117 @@ function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* Latest Public Flights Section */}
+      {(loadingFlights || publicFlights.length > 0) && (
+        <section className="container mx-auto px-4 py-24 border-t border-white/10">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center justify-between mb-12">
+              <div>
+                <h2 className="text-4xl font-bold mb-2">Latest Community Flights</h2>
+                <p className="text-white/60">
+                  See what other pilots are sharing
+                </p>
+              </div>
+              <Link href="/public">
+                <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
+                  View All
+                </Button>
+              </Link>
+            </div>
+            {loadingFlights ? (
+              <div className="grid md:grid-cols-3 gap-6">
+                <FlightCardSkeleton />
+                <FlightCardSkeleton />
+                <FlightCardSkeleton />
+              </div>
+            ) : publicFlights.length > 0 ? (
+              <div className="grid md:grid-cols-3 gap-6">
+                {publicFlights.map((flight) => (
+                  <Card key={flight.id} className="bg-[#0a0a0a] border-white/10">
+                    <CardContent className="p-6">
+                      {/* Header */}
+                      <div className="mb-4">
+                        <div className="text-sm text-white/60 mb-1">
+                          {format(new Date(flight.date), "MMMM d, yyyy")}
+                          {flight.username && (
+                            <span className="ml-2">by @{flight.username}</span>
+                          )}
+                        </div>
+                        <div className="text-xl font-semibold">
+                          {flight.departure || "N/A"} → {flight.arrival || "N/A"}
+                        </div>
+                      </div>
+
+                      {/* Flight Summary */}
+                      <div className="space-y-3 text-sm">
+                        {(flight.aircraft || flight.callsign || flight.airframe) && (
+                          <div className="flex flex-wrap gap-4 pb-3 border-b border-white/5">
+                            {flight.aircraft && (
+                              <div>
+                                <div className="text-white/40 text-xs uppercase mb-1">Aircraft</div>
+                                <div className="font-semibold">{flight.aircraft}</div>
+                              </div>
+                            )}
+                            {flight.callsign && (
+                              <div>
+                                <div className="text-white/40 text-xs uppercase mb-1">Callsign</div>
+                                <div className="font-semibold">{flight.callsign}</div>
+                              </div>
+                            )}
+                            {flight.airframe && (
+                              <div>
+                                <div className="text-white/40 text-xs uppercase mb-1">Airframe</div>
+                                <div className="font-semibold">{flight.airframe}</div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Key Details */}
+                        <div className="flex flex-wrap gap-x-4 gap-y-2">
+                          {flight.blockTime && (
+                            <div>
+                              <div className="text-white/60 text-xs mb-1">Block Time</div>
+                              <div className="font-medium">{flight.blockTime}</div>
+                            </div>
+                          )}
+                          {flight.cruiseAltitude && (
+                            <div>
+                              <div className="text-white/60 text-xs mb-1">Cruise Altitude</div>
+                              <div className="font-medium">{flight.cruiseAltitude}</div>
+                            </div>
+                          )}
+                          {flight.blockFuel !== null && (
+                            <div>
+                              <div className="text-white/60 text-xs mb-1">Block Fuel</div>
+                              <div className="font-medium">{flight.blockFuel} kg</div>
+                            </div>
+                          )}
+                          {flight.routeDistance !== null && (
+                            <div>
+                              <div className="text-white/60 text-xs mb-1">Distance</div>
+                              <div className="font-medium">{flight.routeDistance} nm</div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Route Preview */}
+                        {flight.route && (
+                          <div className="pt-3 border-t border-white/5">
+                            <div className="text-white/60 text-xs mb-1">Route</div>
+                            <div className="font-medium text-xs truncate">{flight.route}</div>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        </section>
+      )}
 
       {/* Features Section */}
       <section className="container mx-auto px-4 py-24 border-t border-white/10">

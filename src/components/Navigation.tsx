@@ -79,17 +79,31 @@ export function Navigation() {
               </Button>
             </div>
           ) : (
-            <div className="flex items-center gap-4">
-              <Link href="/login">
-                <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
-                  Sign In
-                </Button>
+            <div className="flex items-center gap-6">
+              {/* Community Tab for non-logged-in users */}
+              <Link
+                href="/public"
+                className={cn(
+                  "px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                  pathname === "/public"
+                    ? "bg-white/10 text-white"
+                    : "text-white/60 hover:text-white hover:bg-white/5"
+                )}
+              >
+                Community
               </Link>
-              <Link href="/register">
-                <Button className="bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg">
-                  Get Started
-                </Button>
-              </Link>
+              <div className="flex items-center gap-4">
+                <Link href="/login">
+                  <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button className="bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg">
+                    Get Started
+                  </Button>
+                </Link>
+              </div>
             </div>
           )}
         </div>
