@@ -31,7 +31,7 @@ const flightSchema = z.object({
   v1: z.string().optional(),
   vr: z.string().optional(),
   v2: z.string().optional(),
-  toga: z.boolean().default(false),
+  toga: z.boolean().optional(),
   flaps: z.string().optional(),
   landingRunway: z.string().optional(),
   star: z.string().optional(),
@@ -42,7 +42,7 @@ const flightSchema = z.object({
   timeOfDay: z.enum(["MORNING", "MID-DAY", "EVENING", "NIGHT"]).optional(),
   passengers: z.number().optional(),
   cargo: z.number().optional(),
-  isPublic: z.boolean().default(false),
+  isPublic: z.boolean().optional(),
 });
 
 type FlightFormData = z.infer<typeof flightSchema>;

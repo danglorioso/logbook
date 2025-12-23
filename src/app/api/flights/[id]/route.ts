@@ -1,21 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { auth } from "@clerk/nextjs/server";
 import { sql } from "@/lib/db/schema";
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    const { userId } = await auth();
     
-    if (!session?.user) {
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const result = await sql`
       DELETE FROM flights
-      WHERE id = ${params.id} AND user_id = ${session.user.id}
+      WHERE id = ${id} AND user_id = ${userId}
       RETURNING id
     `;
 

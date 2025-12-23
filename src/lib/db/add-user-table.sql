@@ -33,3 +33,4 @@ SELECT id, email, name, email_verified, created_at, updated_at
 FROM users
 ON CONFLICT (id) DO NOTHING;
 
+

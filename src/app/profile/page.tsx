@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useUser, useClerk } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -39,27 +41,18 @@ interface Flight {
 }
 
 export default function ProfilePage() {
+  const { user, isLoaded: userLoaded } = useUser();
+  const { signOut } = useClerk();
+  const router = useRouter();
   const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    fetchUser();
-    fetchFlights();
-  }, []);
-
-  const fetchUser = async () => {
-    try {
-      const res = await fetch("/api/auth/get-session");
-      if (res.ok) {
-        const data = await res.json();
-        setUser(data.user);
-      }
-    } catch (error) {
-      console.error("Failed to fetch user:", error);
+    if (userLoaded && user) {
+      fetchFlights();
     }
-  };
+  }, [userLoaded, user]);
 
   const fetchFlights = async () => {
     try {
@@ -76,8 +69,8 @@ export default function ProfilePage() {
   };
 
   const handleLogout = async () => {
-    await fetch("/api/auth/sign-out", { method: "POST" });
-    window.location.href = "/";
+    await signOut();
+    router.push("/");
   };
 
   const handleFlightAdded = () => {
@@ -89,12 +82,17 @@ export default function ProfilePage() {
     setFlights(flights.filter((f) => f.id !== flightId));
   };
 
-  if (loading) {
+  if (!userLoaded || loading) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-white/60">Loading...</div>
       </div>
     );
+  }
+
+  if (!user) {
+    router.push("/login");
+    return null;
   }
 
   const stats = {
@@ -131,9 +129,9 @@ export default function ProfilePage() {
         {/* Profile Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">
-            {user?.name || "Pilot"}
+            {user.firstName || user.fullName || "Pilot"}
           </h1>
-          <p className="text-white/60">{user?.email}</p>
+          <p className="text-white/60">{user.primaryEmailAddress?.emailAddress}</p>
         </div>
 
         {/* Stats */}

@@ -104,3 +104,4 @@ export function FlightCard({ flight, onDelete }: FlightCardProps) {
   );
 }
 
+
