@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Footer from "@/components/Footer";
 import { AnimatedPlane } from "@/components/AnimatedPlane";
 
 export default function RegisterPage() {
@@ -158,7 +159,66 @@ export default function RegisterPage() {
 
   if (verifying) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
+      <div className="min-h-screen bg-black text-white flex flex-col">
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="w-full max-w-md">
+            <div className="flex items-center gap-2 justify-center mb-8 group">
+              <AnimatedPlane size="md" />
+              <span className="text-2xl font-semibold">Logbook</span>
+            </div>
+            <Card className="bg-[#0a0a0a] border-white/10">
+              <CardHeader className="space-y-1">
+                <CardTitle className="text-2xl text-center">Verify Your Email</CardTitle>
+                <CardDescription className="text-center text-white/60">
+                  Enter the code sent to {email}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleVerification} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="code">Verification Code</Label>
+                    <Input
+                      id="code"
+                      type="text"
+                      placeholder="Enter 6-digit code"
+                      value={code}
+                      onChange={(e) => setCode(e.target.value)}
+                      required
+                      className="bg-black border-white/10"
+                      maxLength={6}
+                    />
+                  </div>
+                  {error && (
+                    <p className="text-sm text-red-400">{error}</p>
+                  )}
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg disabled:opacity-50" 
+                    disabled={loading}
+                  >
+                    {loading ? "Verifying..." : "Verify Code"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full border-white/30 text-white hover:bg-white/10"
+                    onClick={() => setVerifying(false)}
+                  >
+                    Back
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-black text-white flex flex-col">
+      <div className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <div className="flex items-center gap-2 justify-center mb-8 group">
             <AnimatedPlane size="md" />
@@ -166,114 +226,61 @@ export default function RegisterPage() {
           </div>
           <Card className="bg-[#0a0a0a] border-white/10">
             <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl text-center">Verify Your Email</CardTitle>
+              <CardTitle className="text-2xl text-center">Create Account</CardTitle>
               <CardDescription className="text-center text-white/60">
-                Enter the code sent to {email}
+                Enter your details to get started
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleVerification} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="code">Verification Code</Label>
+                  <Label htmlFor="username">Username</Label>
                   <Input
-                    id="code"
+                    id="username"
                     type="text"
-                    placeholder="Enter 6-digit code"
-                    value={code}
-                    onChange={(e) => setCode(e.target.value)}
+                    placeholder=""
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     required
                     className="bg-black border-white/10"
-                    maxLength={6}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder=""
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="bg-black border-white/10"
                   />
                 </div>
                 {error && (
                   <p className="text-sm text-red-400">{error}</p>
                 )}
+                {/* Clerk CAPTCHA element */}
+                <div id="clerk-captcha" className="flex justify-center my-4"></div>
                 <Button 
                   type="submit" 
                   className="w-full bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg disabled:opacity-50" 
-                  disabled={loading}
+                  disabled={loading || !isLoaded}
                 >
-                  {loading ? "Verifying..." : "Verify Code"}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full border-white/30 text-white hover:bg-white/10"
-                  onClick={() => setVerifying(false)}
-                >
-                  Back
+                  {loading ? "Sending..." : "Send Verification Code"}
                 </Button>
               </form>
+              <div className="mt-6 text-center text-sm text-white/60">
+                Already have an account?{" "}
+                <Link href="/login" className="text-white hover:underline">
+                  Sign in
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </div>
       </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="flex items-center gap-2 justify-center mb-8 group">
-          <AnimatedPlane size="md" />
-          <span className="text-2xl font-semibold">Logbook</span>
-        </div>
-        <Card className="bg-[#0a0a0a] border-white/10">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center">Create Account</CardTitle>
-            <CardDescription className="text-center text-white/60">
-              Enter your details to get started
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  type="text"
-                  placeholder=""
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                  className="bg-black border-white/10"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder=""
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="bg-black border-white/10"
-                />
-              </div>
-              {error && (
-                <p className="text-sm text-red-400">{error}</p>
-              )}
-              {/* Clerk CAPTCHA element */}
-              <div id="clerk-captcha" className="flex justify-center my-4"></div>
-              <Button 
-                type="submit" 
-                className="w-full bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg disabled:opacity-50" 
-                disabled={loading || !isLoaded}
-              >
-                {loading ? "Sending..." : "Send Verification Code"}
-              </Button>
-            </form>
-            <div className="mt-6 text-center text-sm text-white/60">
-              Already have an account?{" "}
-              <Link href="/login" className="text-white hover:underline">
-                Sign in
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <Footer />
     </div>
   );
 }

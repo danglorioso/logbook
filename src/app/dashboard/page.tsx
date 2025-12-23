@@ -9,6 +9,7 @@ import { Plus } from "lucide-react";
 import { AddFlightDialog } from "@/components/AddFlightDialog";
 import { FlightCard } from "@/components/FlightCard";
 import { Navigation } from "@/components/Navigation";
+import Footer from "@/components/Footer";
 
 interface Flight {
   id: string;
@@ -214,6 +215,7 @@ export default function ProfilePage() {
           flight={editingFlight}
         />
       </div>
+      <Footer />
     </div>
   );
 }

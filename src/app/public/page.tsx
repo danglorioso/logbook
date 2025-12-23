@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
 import { Navigation } from "@/components/Navigation";
+import Footer from "@/components/Footer";
 
 interface PublicFlight {
   id: string;
@@ -245,6 +246,7 @@ export default function PublicFlightsPage() {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

@@ -11,6 +11,7 @@ import { AnimatedPlane } from "@/components/AnimatedPlane";
 import { Navigation } from "@/components/Navigation";
 import { AddFlightDialog } from "@/components/AddFlightDialog";
 import { FlightCard } from "@/components/FlightCard";
+import Footer from "@/components/Footer";
 
 interface Flight {
   id: string;
@@ -142,12 +143,7 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-white/10 py-8">
-        <div className="container mx-auto px-4 text-center text-white/40 text-sm">
-          <p>© 2024 Logbook. Built for flight simulator enthusiasts.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
@@ -238,7 +234,7 @@ function DashboardContent() {
         {/* Profile Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">
-            {(user.username || user.firstName || user.fullName || "Pilot")}'s Flights
+            {(user.username || user.firstName || user.fullName || "Pilot")}&apos;s Flights
           </h1>
           <p className="text-white/60">{user.primaryEmailAddress?.emailAddress}</p>
         </div>
