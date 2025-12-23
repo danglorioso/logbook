@@ -19,6 +19,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Eye, Lock } from "lucide-react";
+import { AIRCRAFT_DATABASE } from "@/lib/aircraft-database";
+import { loadAirports, searchAirports } from "@/lib/airports-database";
 
 const flightSchema = z.object({
   date: z.string().min(1, "Date is required"),
@@ -89,6 +91,13 @@ interface AddFlightDialogProps {
 export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFlightDialogProps) {
   const [loading, setLoading] = useState(false);
   const [currentTab, setCurrentTab] = useState("general");
+  const [aircraftSuggestions, setAircraftSuggestions] = useState<string[]>([]);
+  const [showAircraftSuggestions, setShowAircraftSuggestions] = useState(false);
+  const [departureSuggestions, setDepartureSuggestions] = useState<Array<{icao: string; name: string; city: string}>>([]);
+  const [showDepartureSuggestions, setShowDepartureSuggestions] = useState(false);
+  const [arrivalSuggestions, setArrivalSuggestions] = useState<Array<{icao: string; name: string; city: string}>>([]);
+  const [showArrivalSuggestions, setShowArrivalSuggestions] = useState(false);
+  const [airports, setAirports] = useState<Array<{icao: string; name: string; city: string; country: string}>>([]);
   const isEditing = !!flight;
   
   const tabs = ["general", "takeoff", "landing", "postflight"];
@@ -150,6 +159,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
       cargo: flight.cargo || undefined,
       isPublic: flight.isPublic || false,
     } : {
+      date: formatDateForInput(new Date()),
       toga: false,
       isPublic: true,
     },
@@ -159,6 +169,69 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
   const brake = watch("brake");
   const timeOfDay = watch("timeOfDay");
   const isPublic = watch("isPublic");
+  const aircraftValue = watch("aircraft");
+  const departureValue = watch("departure");
+  const arrivalValue = watch("arrival");
+
+  // Update aircraft suggestions when aircraft value changes
+  React.useEffect(() => {
+    if (aircraftValue) {
+      const filtered = AIRCRAFT_DATABASE.filter(aircraft =>
+        aircraft.toLowerCase().includes(aircraftValue.toLowerCase())
+      );
+      setAircraftSuggestions(filtered.slice(0, 10));
+      setShowAircraftSuggestions(filtered.length > 0);
+    } else {
+      setAircraftSuggestions([]);
+      setShowAircraftSuggestions(false);
+    }
+  }, [aircraftValue]);
+
+  // Update departure suggestions
+  React.useEffect(() => {
+    if (departureValue && airports.length > 0) {
+      const filtered = searchAirports(departureValue, airports.map(a => ({
+        icao: a.icao,
+        name: a.name,
+        city: a.city,
+        country: a.country,
+        latitude: 0,
+        longitude: 0,
+      })));
+      setDepartureSuggestions(filtered.slice(0, 10).map(a => ({
+        icao: a.icao,
+        name: a.name,
+        city: a.city,
+      })));
+      setShowDepartureSuggestions(filtered.length > 0 && departureValue.length > 0);
+    } else {
+      setDepartureSuggestions([]);
+      setShowDepartureSuggestions(false);
+    }
+  }, [departureValue, airports]);
+
+  // Update arrival suggestions
+  React.useEffect(() => {
+    if (arrivalValue && airports.length > 0) {
+      const filtered = searchAirports(arrivalValue, airports.map(a => ({
+        icao: a.icao,
+        name: a.name,
+        city: a.city,
+        country: a.country,
+        latitude: 0,
+        longitude: 0,
+      })));
+      setArrivalSuggestions(filtered.slice(0, 10).map(a => ({
+        icao: a.icao,
+        name: a.name,
+        city: a.city,
+      })));
+      setShowArrivalSuggestions(filtered.length > 0 && arrivalValue.length > 0);
+    } else {
+      setArrivalSuggestions([]);
+      setShowArrivalSuggestions(false);
+    }
+  }, [arrivalValue, airports]);
 
   const onSubmit = async (data: FlightFormData) => {
     setLoading(true);
@@ -184,6 +257,21 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
       setLoading(false);
     }
   };
+
+  // Load airports when dialog opens
+  React.useEffect(() => {
+    if (open) {
+      loadAirports().then(loadedAirports => {
+        setAirports(loadedAirports.map(a => ({
+          icao: a.icao,
+          name: a.name,
+          city: a.city,
+          country: a.country,
+        })));
+      });
+      setCurrentTab("general");
+    }
+  }, [open]);
 
   // Reset tab when dialog opens
   React.useEffect(() => {
@@ -224,6 +312,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
       });
     } else if (open && !flight) {
       reset({
+        date: formatDateForInput(new Date()),
         toga: false,
         isPublic: true,
       });
@@ -303,13 +392,45 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                     <p className="text-sm text-red-400 mt-1">{errors.date.message}</p>
                   )}
                 </div>
-                <div>
-                  <Label htmlFor="aircraft">A/C</Label>
+                <div className="relative">
+                  <Label htmlFor="aircraft">Aircraft</Label>
                   <Input
                     id="aircraft"
                     {...register("aircraft")}
                     className="bg-black border-white/10"
+                    placeholder="Type to search or enter custom aircraft"
+                    autoComplete="off"
+                    onFocus={() => {
+                      if (aircraftValue) {
+                        const filtered = AIRCRAFT_DATABASE.filter(aircraft =>
+                          aircraft.toLowerCase().includes(aircraftValue.toLowerCase())
+                        );
+                        setAircraftSuggestions(filtered.slice(0, 10));
+                        setShowAircraftSuggestions(filtered.length > 0);
+                      }
+                    }}
+                    onBlur={() => {
+                      // Delay hiding suggestions to allow clicks
+                      setTimeout(() => setShowAircraftSuggestions(false), 200);
+                    }}
                   />
+                  {showAircraftSuggestions && aircraftSuggestions.length > 0 && (
+                    <div className="absolute z-50 w-full mt-1 bg-[#0a0a0a] border border-white/10 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                      {aircraftSuggestions.map((aircraft) => (
+                        <div
+                          key={aircraft}
+                          className="px-3 py-2 text-sm text-white hover:bg-white/10 cursor-pointer border-b border-white/5 last:border-b-0"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            setValue("aircraft", aircraft);
+                            setShowAircraftSuggestions(false);
+                          }}
+                        >
+                          {aircraft}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="callsign">Callsign</Label>
@@ -319,25 +440,67 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                     className="bg-black border-white/10"
                   />
                 </div>
-                <div>
+                <div className="relative">
                   <Label htmlFor="departure">Departure</Label>
                   <Input
                     id="departure"
-                    placeholder="ICAO code"
-                    maxLength={4}
+                    placeholder="ICAO code or airport name"
                     {...register("departure")}
                     className="bg-black border-white/10"
+                    autoComplete="off"
+                    onBlur={() => {
+                      setTimeout(() => setShowDepartureSuggestions(false), 200);
+                    }}
                   />
+                  {showDepartureSuggestions && departureSuggestions.length > 0 && (
+                    <div className="absolute z-50 w-full mt-1 bg-[#0a0a0a] border border-white/10 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                      {departureSuggestions.map((airport) => (
+                        <div
+                          key={airport.icao}
+                          className="px-3 py-2 text-sm text-white hover:bg-white/10 cursor-pointer border-b border-white/5 last:border-b-0"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            setValue("departure", airport.icao);
+                            setShowDepartureSuggestions(false);
+                          }}
+                        >
+                          <div className="font-medium">{airport.icao}</div>
+                          <div className="text-xs text-white/60">{airport.name} {airport.city && `- ${airport.city}`}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <div>
+                <div className="relative">
                   <Label htmlFor="arrival">Arrival</Label>
                   <Input
                     id="arrival"
-                    placeholder="ICAO code"
-                    maxLength={4}
+                    placeholder="ICAO code or airport name"
                     {...register("arrival")}
                     className="bg-black border-white/10"
+                    autoComplete="off"
+                    onBlur={() => {
+                      setTimeout(() => setShowArrivalSuggestions(false), 200);
+                    }}
                   />
+                  {showArrivalSuggestions && arrivalSuggestions.length > 0 && (
+                    <div className="absolute z-50 w-full mt-1 bg-[#0a0a0a] border border-white/10 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                      {arrivalSuggestions.map((airport) => (
+                        <div
+                          key={airport.icao}
+                          className="px-3 py-2 text-sm text-white hover:bg-white/10 cursor-pointer border-b border-white/5 last:border-b-0"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            setValue("arrival", airport.icao);
+                            setShowArrivalSuggestions(false);
+                          }}
+                        >
+                          <div className="font-medium">{airport.icao}</div>
+                          <div className="text-xs text-white/60">{airport.name} {airport.city && `- ${airport.city}`}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="cruiseAltitude">CRZ FL</Label>
