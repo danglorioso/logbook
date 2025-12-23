@@ -2,8 +2,14 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2, Edit } from "lucide-react";
+import { Trash2, Edit, Eye, Lock } from "lucide-react";
 import { format } from "date-fns";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface Flight {
   id: string;
@@ -75,6 +81,22 @@ export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center justify-center h-9 w-9">
+                    {flight.isPublic ? (
+                      <Eye className="h-4 w-4 text-white/60" />
+                    ) : (
+                      <Lock className="h-4 w-4 text-white/60" />
+                    )}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{flight.isPublic ? "Public" : "Private"}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             {onEdit && (
               <Button
                 variant="outline"

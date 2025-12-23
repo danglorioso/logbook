@@ -16,7 +16,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Eye, Lock } from "lucide-react";
 
 const flightSchema = z.object({
   date: z.string().min(1, "Date is required"),
@@ -131,7 +133,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
       isPublic: flight.isPublic || false,
     } : {
       toga: false,
-      isPublic: false,
+      isPublic: true,
     },
   });
 
@@ -158,7 +160,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
       } else {
         alert(`Failed to ${isEditing ? "update" : "create"} flight. Please try again.`);
       }
-    } catch (error) {
+    } catch {
       alert(`Failed to ${isEditing ? "update" : "create"} flight. Please try again.`);
     } finally {
       setLoading(false);
@@ -198,33 +200,70 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
     } else if (open && !flight) {
       reset({
         toga: false,
-        isPublic: false,
+        isPublic: true,
       });
     }
-  }, [open, flight?.id, reset]);
+  }, [open, flight, reset]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-[#0a0a0a] border-white/10 text-white">
+        {/* Visibility toggle positioned to align with X button */}
+        <div className="absolute right-16 top-4 flex items-center gap-3">
+          {isPublic ? (
+            <Eye className="h-5 w-5 text-white/60" />
+          ) : (
+            <Lock className="h-5 w-5 text-white/60" />
+          )}
+          <div className="flex items-center gap-2">
+            <Label htmlFor="visibility-toggle" className="text-sm cursor-pointer">
+              {isPublic ? "Public" : "Private"}
+            </Label>
+            <Switch
+              id="visibility-toggle"
+              checked={isPublic}
+              onCheckedChange={(checked) => setValue("isPublic", checked)}
+            />
+          </div>
+        </div>
         <DialogHeader>
-          <DialogTitle className="text-2xl">
-            {isEditing ? "Edit Flight" : "Add New Flight"}
-          </DialogTitle>
-          <DialogDescription className="text-white/60">
-            {isEditing 
-              ? "Update the details of your flight" 
-              : "Log all the details of your flight simulator session"}
-          </DialogDescription>
+          <div>
+            <DialogTitle className="text-2xl">Add New Flight</DialogTitle>
+            <DialogDescription className="text-white/60">
+              Log all the details of your flight simulator session
+            </DialogDescription>
+          </div>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="general" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="general">General</TabsTrigger>
-              <TabsTrigger value="takeoff">Takeoff</TabsTrigger>
-              <TabsTrigger value="landing">Landing</TabsTrigger>
-              <TabsTrigger value="postflight">Post Flight</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-4 bg-white/10 border border-white/20 p-1 h-12">
+              <TabsTrigger 
+                value="general"
+                className="data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:font-semibold text-white/70 hover:text-white transition-all"
+              >
+                General
+              </TabsTrigger>
+              <TabsTrigger 
+                value="takeoff"
+                className="data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:font-semibold text-white/70 hover:text-white transition-all"
+              >
+                Takeoff
+              </TabsTrigger>
+              <TabsTrigger 
+                value="landing"
+                className="data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:font-semibold text-white/70 hover:text-white transition-all"
+              >
+                Landing
+              </TabsTrigger>
+              <TabsTrigger 
+                value="postflight"
+                className="data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:font-semibold text-white/70 hover:text-white transition-all"
+              >
+                Post Flight
+              </TabsTrigger>
             </TabsList>
 
+            <div className="min-h-[400px]">
             <TabsContent value="general" className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -485,15 +524,8 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
                   ))}
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="isPublic"
-                  checked={isPublic}
-                  onCheckedChange={(checked) => setValue("isPublic", checked === true)}
-                />
-                <Label htmlFor="isPublic">Make this flight public</Label>
-              </div>
             </TabsContent>
+            </div>
           </Tabs>
 
           <div className="flex justify-end gap-4">
@@ -510,7 +542,7 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
               disabled={loading}
               className="bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg disabled:opacity-50"
             >
-              {loading ? "Saving..." : isEditing ? "Update Flight" : "Save Flight"}
+              {loading ? "Saving..." : "Save Flight"}
             </Button>
           </div>
         </form>
