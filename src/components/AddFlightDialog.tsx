@@ -88,7 +88,25 @@ interface AddFlightDialogProps {
 
 export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFlightDialogProps) {
   const [loading, setLoading] = useState(false);
+  const [currentTab, setCurrentTab] = useState("general");
   const isEditing = !!flight;
+  
+  const tabs = ["general", "takeoff", "landing", "postflight"];
+  const currentTabIndex = tabs.indexOf(currentTab);
+  const isLastTab = currentTabIndex === tabs.length - 1;
+  const isFirstTab = currentTabIndex === 0;
+  
+  const handleNext = () => {
+    if (!isLastTab) {
+      setCurrentTab(tabs[currentTabIndex + 1]);
+    }
+  };
+  
+  const handlePrevious = () => {
+    if (!isFirstTab) {
+      setCurrentTab(tabs[currentTabIndex - 1]);
+    }
+  };
   
   // Format date for input field (YYYY-MM-DD)
   const formatDateForInput = (date: string | Date) => {
@@ -167,6 +185,13 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
     }
   };
 
+  // Reset tab when dialog opens
+  React.useEffect(() => {
+    if (open) {
+      setCurrentTab("general");
+    }
+  }, [open]);
+  
   // Reset form when dialog opens/closes or flight changes
   React.useEffect(() => {
     if (open && flight) {
@@ -235,29 +260,29 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
           </div>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <Tabs defaultValue="general" className="w-full">
+          <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
             <TabsList className="grid w-full grid-cols-4 bg-white/10 border border-white/20 p-1 h-12">
               <TabsTrigger 
                 value="general"
-                className="data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:font-semibold text-white/70 hover:text-white transition-all"
+                className="data-[state=active]:bg-white data-[state=active]:text-black text-white/70 hover:text-white transition-all"
               >
                 General
               </TabsTrigger>
               <TabsTrigger 
                 value="takeoff"
-                className="data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:font-semibold text-white/70 hover:text-white transition-all"
+                className="data-[state=active]:bg-white data-[state=active]:text-black text-white/70 hover:text-white transition-all"
               >
                 Takeoff
               </TabsTrigger>
               <TabsTrigger 
                 value="landing"
-                className="data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:font-semibold text-white/70 hover:text-white transition-all"
+                className="data-[state=active]:bg-white data-[state=active]:text-black text-white/70 hover:text-white transition-all"
               >
                 Landing
               </TabsTrigger>
               <TabsTrigger 
                 value="postflight"
-                className="data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:font-semibold text-white/70 hover:text-white transition-all"
+                className="data-[state=active]:bg-white data-[state=active]:text-black text-white/70 hover:text-white transition-all"
               >
                 Post Flight
               </TabsTrigger>
@@ -528,22 +553,46 @@ export function AddFlightDialog({ open, onOpenChange, onSuccess, flight }: AddFl
             </div>
           </Tabs>
 
-          <div className="flex justify-end gap-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              className="border-white/30 text-white hover:bg-white/10"
-            >
-              Cancel
-            </Button>
-            <Button 
-              type="submit" 
-              disabled={loading}
-              className="bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg disabled:opacity-50"
-            >
-              {loading ? "Saving..." : "Save Flight"}
-            </Button>
+          <div className="flex justify-between items-center">
+            <div>
+              {!isFirstTab && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handlePrevious}
+                  className="border-white/30 text-white hover:bg-white/10"
+                >
+                  Previous
+                </Button>
+              )}
+            </div>
+            <div className="flex gap-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                className="border-white/30 text-white hover:bg-white/10"
+              >
+                Cancel
+              </Button>
+              {!isLastTab ? (
+                <Button
+                  type="button"
+                  onClick={handleNext}
+                  className="bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg"
+                >
+                  Next
+                </Button>
+              ) : (
+                <Button 
+                  type="submit" 
+                  disabled={loading}
+                  className="bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg disabled:opacity-50"
+                >
+                  {loading ? "Saving..." : "Save Flight"}
+                </Button>
+              )}
+            </div>
           </div>
         </form>
       </DialogContent>
