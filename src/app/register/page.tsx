@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useSignUp } from "@clerk/nextjs";
+import { useState, useEffect } from "react";
+import { useSignUp, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { AnimatedPlane } from "@/components/AnimatedPlane";
 
 export default function RegisterPage() {
   const { isLoaded, signUp, setActive } = useSignUp();
+  const { user, isLoaded: userLoaded } = useUser();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [code, setCode] = useState("");
@@ -20,6 +21,13 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (userLoaded && user) {
+      router.push("/");
+    }
+  }, [userLoaded, user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,7 +96,7 @@ export default function RegisterPage() {
             console.error("Failed to sync user:", syncError);
             // Continue anyway - sync is not critical
           }
-          router.push("/profile");
+          router.push("/");
         } else {
           setError("Session creation failed. Please try signing in.");
         }
@@ -114,7 +122,7 @@ export default function RegisterPage() {
                 console.error("Failed to sync user:", syncError);
                 // Continue anyway - sync is not critical
               }
-              router.push("/profile");
+              router.push("/");
             } catch (activeErr) {
               const activeError = activeErr as { errors?: Array<{ message?: string }>; message?: string };
               console.error("Set active error:", activeError);
@@ -156,6 +164,15 @@ export default function RegisterPage() {
       setLoading(false);
     }
   };
+
+  // Show loading while checking auth state
+  if (!userLoaded || (userLoaded && user)) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-white/60">Loading...</div>
+      </div>
+    );
+  }
 
   if (verifying) {
     return (

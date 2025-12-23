@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useSignIn } from "@clerk/nextjs";
+import { useState, useEffect } from "react";
+import { useSignIn, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -13,12 +13,20 @@ import { AnimatedPlane } from "@/components/AnimatedPlane";
 
 export default function LoginPage() {
   const { isLoaded, signIn, setActive } = useSignIn();
+  const { user, isLoaded: userLoaded } = useUser();
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [verifying, setVerifying] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (userLoaded && user) {
+      router.push("/");
+    }
+  }, [userLoaded, user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,7 +97,7 @@ export default function LoginPage() {
         // Set the session as active and redirect
         if (signInAttempt.createdSessionId) {
           await setActive({ session: signInAttempt.createdSessionId });
-          router.push("/profile");
+          router.push("/");
         } else {
           setError("Session creation failed. Please try again.");
         }
@@ -114,6 +122,15 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  // Show loading while checking auth state
+  if (!userLoaded || (userLoaded && user)) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-white/60">Loading...</div>
+      </div>
+    );
+  }
 
   if (verifying) {
     return (
