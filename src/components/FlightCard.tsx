@@ -2,42 +2,45 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, Edit } from "lucide-react";
 import { format } from "date-fns";
 
-interface FlightCardProps {
-  flight: {
-    id: string;
-    date: string;
-    aircraft: string | null;
-    callsign: string | null;
-    departure: string | null;
-    arrival: string | null;
-    cruiseAltitude: string | null;
-    blockFuel: number | null;
-    route: string | null;
-    takeoffRunway: string | null;
-    sid: string | null;
-    v1: string | null;
-    vr: string | null;
-    v2: string | null;
-    toga: boolean;
-    flaps: string | null;
-    landingRunway: string | null;
-    star: string | null;
-    brake: "LOW" | "MED" | null;
-    vapp: string | null;
-    totalDuration: string | null;
-    landRate: number | null;
-    timeOfDay: "MORNING" | "MID-DAY" | "EVENING" | "NIGHT" | null;
-    passengers: number | null;
-    cargo: number | null;
-    isPublic: boolean;
-  };
-  onDelete: (flightId: string) => void;
+interface Flight {
+  id: string;
+  date: string;
+  aircraft: string | null;
+  callsign: string | null;
+  departure: string | null;
+  arrival: string | null;
+  cruiseAltitude: string | null;
+  blockFuel: number | null;
+  route: string | null;
+  takeoffRunway: string | null;
+  sid: string | null;
+  v1: string | null;
+  vr: string | null;
+  v2: string | null;
+  toga: boolean;
+  flaps: string | null;
+  landingRunway: string | null;
+  star: string | null;
+  brake: "LOW" | "MED" | null;
+  vapp: string | null;
+  totalDuration: string | null;
+  landRate: number | null;
+  timeOfDay: "MORNING" | "MID-DAY" | "EVENING" | "NIGHT" | null;
+  passengers: number | null;
+  cargo: number | null;
+  isPublic: boolean;
 }
 
-export function FlightCard({ flight, onDelete }: FlightCardProps) {
+interface FlightCardProps {
+  flight: Flight;
+  onDelete: (flightId: string) => void;
+  onEdit?: (flight: Flight) => void;
+}
+
+export function FlightCard({ flight, onDelete, onEdit }: FlightCardProps) {
   const handleDelete = async () => {
     if (confirm("Are you sure you want to delete this flight?")) {
       try {
@@ -53,6 +56,12 @@ export function FlightCard({ flight, onDelete }: FlightCardProps) {
     }
   };
 
+  const handleEdit = () => {
+    if (onEdit) {
+      onEdit(flight);
+    }
+  };
+
   return (
     <Card className="bg-[#0a0a0a] border-white/10">
       <CardContent className="p-6">
@@ -65,14 +74,26 @@ export function FlightCard({ flight, onDelete }: FlightCardProps) {
               {flight.departure || "N/A"} → {flight.arrival || "N/A"}
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleDelete}
-            className="text-white/40 hover:text-red-400"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-2">
+            {onEdit && (
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleEdit}
+                className="border-white/30 text-white hover:bg-white/10 hover:border-white/50"
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleDelete}
+              className="border-red-500/30 text-red-400 hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-300"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
