@@ -87,6 +87,121 @@ const AIRPORT_COORDS: Record<string, { lat: number; lng: number }> = {
   KFCM: { lat: 44.8272, lng: -93.4571 }, // Flying Cloud
   KANE: { lat: 45.1450, lng: -93.2114 }, // Anoka County
   KSTP: { lat: 44.9345, lng: -93.0600 }, // St. Paul Downtown
+  // Additional US Airports - Northeast
+  KLGA: { lat: 40.7769, lng: -73.8740 }, // New York LaGuardia
+  KBTV: { lat: 44.4728, lng: -73.1515 }, // Burlington International
+  KHPN: { lat: 41.0670, lng: -73.7076 }, // White Plains
+  KSWF: { lat: 41.5041, lng: -74.1048 }, // Newburgh
+  KITH: { lat: 42.4910, lng: -76.4584 }, // Ithaca
+  KBGM: { lat: 42.2087, lng: -75.9798 }, // Binghamton
+  KELM: { lat: 42.1599, lng: -76.8916 }, // Elmira
+  KERI: { lat: 42.0822, lng: -80.1762 }, // Erie
+  KAVP: { lat: 41.3385, lng: -75.7234 }, // Scranton/Wilkes-Barre
+  KABE: { lat: 40.6524, lng: -75.4408 }, // Allentown
+  KMDT: { lat: 40.1935, lng: -76.7634 }, // Harrisburg
+  KIPT: { lat: 41.2417, lng: -76.9211 }, // Williamsport
+  KUNV: { lat: 40.8493, lng: -77.8487 }, // State College
+  KAGC: { lat: 40.3544, lng: -79.9302 }, // Pittsburgh Allegheny County
+  KCAK: { lat: 40.9161, lng: -81.4422 }, // Akron-Canton
+  KCLE: { lat: 41.4117, lng: -81.8498 }, // Cleveland
+  KCMH: { lat: 39.9980, lng: -82.8919 }, // Columbus
+  KDAY: { lat: 39.9024, lng: -84.2194 }, // Dayton
+  KCVG: { lat: 39.0488, lng: -84.6678 }, // Cincinnati
+  KIND: { lat: 39.7173, lng: -86.2944 }, // Indianapolis
+  KSDF: { lat: 38.1741, lng: -85.7365 }, // Louisville
+  KLEX: { lat: 38.0365, lng: -84.6059 }, // Lexington
+  KDCA: { lat: 38.8512, lng: -77.0402 }, // Washington Reagan
+  KRIC: { lat: 37.5052, lng: -77.3197 }, // Richmond
+  KORF: { lat: 36.8946, lng: -76.2012 }, // Norfolk
+  KROA: { lat: 37.3255, lng: -79.9754 }, // Roanoke
+  KCHO: { lat: 38.1386, lng: -78.4529 }, // Charlottesville
+  // Southeast
+  KSAV: { lat: 32.1276, lng: -81.2021 }, // Savannah
+  KCHS: { lat: 32.8986, lng: -80.0405 }, // Charleston
+  KMYR: { lat: 33.6797, lng: -78.9283 }, // Myrtle Beach
+  KILM: { lat: 34.2706, lng: -77.9026 }, // Wilmington
+  KFAY: { lat: 34.9912, lng: -78.8803 }, // Fayetteville
+  KGSO: { lat: 36.0978, lng: -79.9373 }, // Greensboro
+  KAVL: { lat: 35.4362, lng: -82.5418 }, // Asheville
+  KTYS: { lat: 35.8110, lng: -83.9940 }, // Knoxville
+  KCHA: { lat: 35.0353, lng: -85.2038 }, // Chattanooga
+  KMEM: { lat: 35.0424, lng: -89.9767 }, // Memphis
+  KBHM: { lat: 33.5629, lng: -86.7535 }, // Birmingham
+  KMGM: { lat: 32.3006, lng: -86.3939 }, // Montgomery
+  KMOB: { lat: 30.6912, lng: -88.2428 }, // Mobile
+  KPNS: { lat: 30.4734, lng: -87.1866 }, // Pensacola
+  KTLH: { lat: 30.3965, lng: -84.3503 }, // Tallahassee
+  KJAX: { lat: 30.4941, lng: -81.6879 }, // Jacksonville
+  KGNV: { lat: 29.6901, lng: -82.2718 }, // Gainesville
+  KECP: { lat: 30.3573, lng: -85.7954 }, // Panama City
+  KPFN: { lat: 30.2121, lng: -85.6828 }, // Panama City-Bay County
+  KRSW: { lat: 26.5362, lng: -81.7552 }, // Fort Myers
+  KPBI: { lat: 26.6832, lng: -80.0956 }, // West Palm Beach
+  KSRQ: { lat: 27.3954, lng: -82.5544 }, // Sarasota
+  KPIE: { lat: 27.9108, lng: -82.6874 }, // St. Petersburg
+  // Midwest
+  KDSM: { lat: 41.5340, lng: -93.6631 }, // Des Moines
+  KCID: { lat: 41.8847, lng: -91.7108 }, // Cedar Rapids
+  KMLI: { lat: 41.4485, lng: -90.5075 }, // Moline
+  KMSN: { lat: 43.1399, lng: -89.3375 }, // Madison
+  KGRB: { lat: 44.4851, lng: -88.1296 }, // Green Bay
+  KATW: { lat: 44.2581, lng: -88.5191 }, // Appleton
+  KEAU: { lat: 44.8658, lng: -91.4843 }, // Eau Claire
+  KRST: { lat: 43.9083, lng: -92.5000 }, // Rochester MN
+  KOMA: { lat: 41.3032, lng: -95.8941 }, // Omaha
+  KLNK: { lat: 40.8510, lng: -96.7592 }, // Lincoln
+  KICT: { lat: 37.6499, lng: -97.4331 }, // Wichita
+  KTUL: { lat: 36.1984, lng: -95.8881 }, // Tulsa
+  KOKC: { lat: 35.3931, lng: -97.6007 }, // Oklahoma City
+  // Southwest
+  KABQ: { lat: 35.0402, lng: -106.6092 }, // Albuquerque
+  KELP: { lat: 31.8073, lng: -106.3776 }, // El Paso
+  KMAF: { lat: 31.9425, lng: -102.2019 }, // Midland
+  KAMA: { lat: 35.2194, lng: -101.7059 }, // Amarillo
+  KLBB: { lat: 33.6636, lng: -101.8228 }, // Lubbock
+  KCRP: { lat: 27.7704, lng: -97.5012 }, // Corpus Christi
+  KBRO: { lat: 25.9068, lng: -97.4259 }, // Brownsville
+  KHRL: { lat: 26.2285, lng: -97.6544 }, // Harlingen
+  KLRD: { lat: 27.5438, lng: -99.4615 }, // Laredo
+  KMFE: { lat: 26.1758, lng: -98.2386 }, // McAllen
+  // West Coast & Mountain
+  KOGD: { lat: 41.1959, lng: -112.0131 }, // Ogden
+  KPVU: { lat: 40.2193, lng: -111.7233 }, // Provo
+  KCDC: { lat: 37.7010, lng: -113.0989 }, // Cedar City
+  KSGU: { lat: 37.0364, lng: -113.5103 }, // St. George
+  KIDA: { lat: 43.5146, lng: -112.0708 }, // Idaho Falls
+  KPIH: { lat: 42.9098, lng: -112.5961 }, // Pocatello
+  KCOU: { lat: 38.8181, lng: -92.2196 }, // Columbia MO
+  KSGF: { lat: 37.2457, lng: -93.3886 }, // Springfield MO
+  KJLN: { lat: 37.1518, lng: -94.4983 }, // Joplin
+  KFSD: { lat: 43.5820, lng: -96.7419 }, // Sioux Falls
+  KRAP: { lat: 43.8773, lng: -103.0577 }, // Rapid City
+  KABR: { lat: 45.4491, lng: -98.4218 }, // Aberdeen
+  // California
+  KLGB: { lat: 33.8177, lng: -118.1516 }, // Long Beach
+  KVNY: { lat: 34.2098, lng: -118.4900 }, // Van Nuys
+  KOXR: { lat: 34.2008, lng: -119.2072 }, // Oxnard
+  KSCK: { lat: 37.8942, lng: -121.2383 }, // Stockton
+  KVIS: { lat: 36.3187, lng: -119.3929 }, // Visalia
+  KMOD: { lat: 37.6258, lng: -120.9544 }, // Modesto
+  // Pacific Northwest
+  KEUG: { lat: 44.1246, lng: -123.2119 }, // Eugene
+  KRDM: { lat: 44.2541, lng: -121.1500 }, // Redmond
+  KBFI: { lat: 47.5300, lng: -122.3020 }, // Seattle Boeing Field
+  KPAE: { lat: 47.9063, lng: -122.2816 }, // Everett
+  // Alaska
+  PANC: { lat: 61.1744, lng: -149.9964 }, // Anchorage
+  PAFA: { lat: 64.8151, lng: -147.8560 }, // Fairbanks
+  PAJN: { lat: 58.3544, lng: -134.5761 }, // Juneau
+  PASI: { lat: 57.0471, lng: -135.3616 }, // Sitka
+  PAKT: { lat: 55.3556, lng: -131.7137 }, // Ketchikan
+  // Hawaii
+  PHNL: { lat: 21.3206, lng: -157.9242 }, // Honolulu
+  PHOG: { lat: 20.8986, lng: -156.4306 }, // Kahului
+  PHKO: { lat: 19.7388, lng: -156.0456 }, // Kona
+  PHLI: { lat: 21.9759, lng: -159.3389 }, // Lihue
+  // Puerto Rico & US Territories
+  TJSJ: { lat: 18.4394, lng: -66.0018 }, // San Juan
   // Major international airports
   EGLL: { lat: 51.4700, lng: -0.4543 }, // London Heathrow
   LFPG: { lat: 49.0097, lng: 2.5479 }, // Paris Charles de Gaulle
