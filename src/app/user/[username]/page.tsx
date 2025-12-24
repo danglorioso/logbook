@@ -8,6 +8,7 @@ import { Navigation } from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { FlightCardSkeleton } from "@/components/skeletons/FlightCardSkeleton";
 import { StatsSkeleton } from "@/components/skeletons/StatsSkeleton";
+import { FlightMap } from "@/components/FlightMap";
 
 interface PublicFlight {
   id: string;
@@ -215,33 +216,36 @@ export default function UserProfilePage() {
                     </div>
                   </div>
 
-                  <div className="space-y-4 text-sm">
-                    {/* Flight Summary Header */}
-                    {(flight.aircraft || flight.callsign || flight.airframe) && (
-                      <div className="flex flex-wrap gap-6 pb-3 border-b border-white/5">
-                        {flight.aircraft && (
-                          <div>
-                            <div className="text-white/40 text-xs uppercase mb-1">Aircraft</div>
-                            <div className="font-semibold text-base">{flight.aircraft}</div>
-                          </div>
-                        )}
-                        {flight.callsign && (
-                          <div>
-                            <div className="text-white/40 text-xs uppercase mb-1">Callsign</div>
-                            <div className="font-semibold text-base">{flight.callsign}</div>
-                          </div>
-                        )}
-                        {flight.airframe && (
-                          <div>
-                            <div className="text-white/40 text-xs uppercase mb-1">Airframe</div>
-                            <div className="font-semibold text-base">{flight.airframe}</div>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                  {/* Two-column layout: content on left, map on right */}
+                  <div className="flex flex-col lg:flex-row gap-4 lg:items-start">
+                    {/* Left column: Flight details */}
+                    <div className="flex-1 space-y-4 text-sm min-w-0">
+                      {/* Flight Summary Header */}
+                      {(flight.aircraft || flight.callsign || flight.airframe) && (
+                        <div className="flex flex-wrap gap-6 pb-3 border-b border-white/5">
+                          {flight.aircraft && (
+                            <div>
+                              <div className="text-white/40 text-xs uppercase mb-1">Aircraft</div>
+                              <div className="font-semibold text-base">{flight.aircraft}</div>
+                            </div>
+                          )}
+                          {flight.callsign && (
+                            <div>
+                              <div className="text-white/40 text-xs uppercase mb-1">Callsign</div>
+                              <div className="font-semibold text-base">{flight.callsign}</div>
+                            </div>
+                          )}
+                          {flight.airframe && (
+                            <div>
+                              <div className="text-white/40 text-xs uppercase mb-1">Airframe</div>
+                              <div className="font-semibold text-base">{flight.airframe}</div>
+                            </div>
+                          )}
+                        </div>
+                      )}
 
-                    {/* Main Content */}
-                    <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-x-6 sm:gap-y-4">
+                      {/* Flight Details */}
+                      <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-x-6 sm:gap-y-4">
                       {/* Takeoff Group */}
                       {(flight.takeoffRunway || flight.sid || flight.v1 || flight.vr || flight.v2 || flight.toga) && (
                         <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
@@ -349,13 +353,26 @@ export default function UserProfilePage() {
                           )}
                         </div>
                       )}
+                      </div>
+
+                      {/* Route */}
+                      {flight.route && (
+                        <div className="w-full border-t border-white/5 pt-3 mt-2">
+                          <div className="text-white/60 mb-1">Route</div>
+                          <div className="font-medium">{flight.route}</div>
+                        </div>
+                      )}
                     </div>
 
-                    {/* Route */}
-                    {flight.route && (
-                      <div className="w-full border-t border-white/5 pt-3 mt-2">
-                        <div className="text-white/60 mb-1">Route</div>
-                        <div className="font-medium">{flight.route}</div>
+                    {/* Right column: Map */}
+                    {flight.departure && flight.arrival && (
+                      <div className="lg:w-64 lg:flex-shrink-0 lg:self-stretch">
+                        <FlightMap
+                          departure={flight.departure}
+                          arrival={flight.arrival}
+                          route={flight.route}
+                          className="w-full h-48 lg:h-full"
+                        />
                       </div>
                     )}
                   </div>
