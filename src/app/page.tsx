@@ -18,7 +18,7 @@ import {
 import { MapPin, BarChart3, Users, Plus, Search, X } from "lucide-react";
 import { AnimatedPlane } from "@/components/AnimatedPlane";
 import { Navigation } from "@/components/Navigation";
-import { AddFlightDialog } from "@/components/AddFlightDialog";
+import { useFlightDialog } from "@/contexts/FlightDialogContext";
 import { FlightCard } from "@/components/FlightCard";
 import { FlightMap } from "@/components/FlightMap";
 import Footer from "@/components/Footer";
@@ -356,8 +356,7 @@ function DashboardContent() {
   const router = useRouter();
   const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(false);
-  const [editingFlight, setEditingFlight] = useState<Flight | null>(null);
+  const { openDialog, setEditingFlight, onFlightSuccess } = useFlightDialog();
   const [userProfile, setUserProfile] = useState<{ firstName?: string | null; lastName?: string | null; name?: string | null } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterPublic, setFilterPublic] = useState<string>("all");
@@ -369,6 +368,13 @@ function DashboardContent() {
       fetchUserProfile();
     }
   }, [userLoaded, user]);
+
+  useEffect(() => {
+    onFlightSuccess(() => {
+      fetchFlights();
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const fetchUserProfile = async () => {
     try {
@@ -396,26 +402,13 @@ function DashboardContent() {
     }
   };
 
-  const handleFlightAdded = () => {
-    fetchFlights();
-    setOpen(false);
-    setEditingFlight(null);
-  };
-
   const handleFlightDeleted = (flightId: string) => {
     setFlights(flights.filter((f) => f.id !== flightId));
   };
 
   const handleEditFlight = (flight: Flight) => {
     setEditingFlight(flight);
-    setOpen(true);
-  };
-
-  const handleDialogOpenChange = (isOpen: boolean) => {
-    setOpen(isOpen);
-    if (!isOpen) {
-      setEditingFlight(null);
-    }
+    openDialog(flight);
   };
 
   if (!userLoaded) {
@@ -557,16 +550,6 @@ function DashboardContent() {
         {/* Flights Section */}
         <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <h2 className="text-xl sm:text-2xl font-bold">Your Flights</h2>
-          <Button 
-            onClick={() => {
-              setEditingFlight(null);
-              setOpen(true);
-            }}
-            className="w-full sm:w-auto bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Flight
-          </Button>
         </div>
 
         {/* Search and Filters */}
@@ -674,10 +657,7 @@ function DashboardContent() {
             <CardContent className="py-12 text-center">
               <p className="text-white/60 mb-4">No flights logged yet.</p>
               <Button 
-                onClick={() => {
-                  setEditingFlight(null);
-                  setOpen(true);
-                }}
+                onClick={() => openDialog()}
                 className="bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg"
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -714,12 +694,6 @@ function DashboardContent() {
           </div>
         )}
 
-        <AddFlightDialog 
-          open={open} 
-          onOpenChange={handleDialogOpenChange} 
-          onSuccess={handleFlightAdded}
-          flight={editingFlight}
-        />
       </div>
       <Footer />
     </div>

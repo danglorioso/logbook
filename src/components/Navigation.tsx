@@ -5,14 +5,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { LogOut, Menu, X } from "lucide-react";
+import { LogOut, Menu, X, Plus } from "lucide-react";
 import { AnimatedPlane } from "@/components/AnimatedPlane";
 import { cn } from "@/lib/utils";
+import { useFlightDialog } from "@/contexts/FlightDialogContext";
 
 export function Navigation() {
   const pathname = usePathname();
   const { user, isLoaded: userLoaded } = useUser();
   const { signOut } = useClerk();
+  const { openDialog } = useFlightDialog();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -58,7 +60,7 @@ export function Navigation() {
             : "text-white/60 hover:text-white hover:bg-white/5"
         )}
       >
-        Profile
+        Settings
       </Link>
       <Link
         href="/about"
@@ -120,6 +122,15 @@ export function Navigation() {
                   {navLinks}
                 </div>
 
+                {/* Add Flight Button */}
+                <Button
+                  onClick={() => openDialog()}
+                  className="bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Flight
+                </Button>
+
                 {/* Sign Out Button */}
                 <Button
                   variant="outline"
@@ -168,17 +179,29 @@ export function Navigation() {
               {navLinks}
             </div>
             {isLoggedIn ? (
-              <Button
-                variant="outline"
-                onClick={() => {
-                  handleLogout();
-                  setMobileMenuOpen(false);
-                }}
-                className="w-full border-white/30 text-white hover:bg-white/10 mt-4"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </Button>
+              <>
+                <Button
+                  onClick={() => {
+                    openDialog();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full bg-white text-black font-semibold hover:bg-white/90 shadow-md hover:shadow-lg mt-4"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Flight
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    handleLogout();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full border-white/30 text-white hover:bg-white/10 mt-2"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              </>
             ) : (
               <div className="flex flex-col gap-2 mt-4">
                 <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
