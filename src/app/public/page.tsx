@@ -90,191 +90,149 @@ export default function PublicFlightsPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {flights.map((flight) => (
-              <Card key={flight.id} className="bg-[#0a0a0a] border-white/10">
-                <CardContent className="p-6">
+              <Card key={flight.id} className="bg-[#0a0a0a] border-white/10 flex flex-col">
+                <CardContent className="p-4 flex flex-col flex-1">
                   {/* Header */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <div className="text-sm text-white/60 mb-1">
-                        {format(new Date(flight.date), "MMMM d, yyyy")}
-                        {flight.username && (
-                          <span className="ml-2">
-                            by{" "}
-                            <Link
-                              href={`/user/${flight.username}`}
-                              className="hover:text-white transition-colors underline decoration-white/30 hover:decoration-white/60"
-                            >
-                              @{flight.username}
-                            </Link>
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-xl font-semibold">
-                        {flight.departure || "N/A"} → {flight.arrival || "N/A"}
-                      </div>
+                  <div className="mb-3">
+                    <div className="text-xs text-white/60 mb-1">
+                      {format(new Date(flight.date), "MMM d, yyyy")}
+                      {flight.username && (
+                        <span className="ml-2">
+                          by{" "}
+                          <Link
+                            href={`/user/${flight.username}`}
+                            className="hover:text-white transition-colors underline decoration-white/30 hover:decoration-white/60"
+                          >
+                            @{flight.username}
+                          </Link>
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-lg font-semibold">
+                      {flight.departure || "N/A"} → {flight.arrival || "N/A"}
                     </div>
                   </div>
 
-                  {/* Two-column layout: content on left, map on right */}
-                  <div className="flex flex-col lg:flex-row gap-4 lg:items-start">
-                    {/* Left column: Flight details */}
-                    <div className="flex-1 space-y-4 text-sm min-w-0">
-                      {/* Flight Summary Header */}
-                      {(flight.aircraft || flight.callsign || flight.airframe) && (
-                        <div className="flex flex-wrap gap-6 pb-3 border-b border-white/5">
-                          {flight.aircraft && (
-                            <div>
-                              <div className="text-white/40 text-xs uppercase mb-1">Aircraft</div>
-                              <div className="font-semibold text-base">{flight.aircraft}</div>
-                            </div>
-                          )}
-                          {flight.callsign && (
-                            <div>
-                              <div className="text-white/40 text-xs uppercase mb-1">Callsign</div>
-                              <div className="font-semibold text-base">{flight.callsign}</div>
-                            </div>
-                          )}
-                          {flight.airframe && (
-                            <div>
-                              <div className="text-white/40 text-xs uppercase mb-1">Airframe</div>
-                              <div className="font-semibold text-base">{flight.airframe}</div>
-                            </div>
-                          )}
+                  {/* Flight Details - Compact Grid */}
+                  <div className="space-y-2 text-xs mb-3 flex-1">
+                    {/* Aircraft Info */}
+                    <div className="flex flex-wrap gap-x-4 gap-y-1">
+                      {flight.aircraft && (
+                        <div>
+                          <span className="text-white/60">Aircraft: </span>
+                          <span className="font-medium">{flight.aircraft}</span>
                         </div>
                       )}
-
-                      {/* Flight Details */}
-                      <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-x-6 sm:gap-y-4">
-                      {/* Takeoff Group */}
-                      {(flight.takeoffRunway || flight.sid || flight.v1 || flight.vr || flight.v2 || flight.toga) && (
-                        <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2">
-                          {flight.takeoffRunway && (
-                            <div>
-                              <div className="text-white/60 mb-1">TO Runway</div>
-                              <div className="font-medium">{flight.takeoffRunway}</div>
-                            </div>
-                          )}
-                          {flight.sid && (
-                            <div>
-                              <div className="text-white/60 mb-1">SID</div>
-                              <div className="font-medium">{flight.sid}</div>
-                            </div>
-                          )}
-                          {flight.v1 && (
-                            <div>
-                              <div className="text-white/60 mb-1">V₁</div>
-                              <div className="font-medium">{flight.v1}</div>
-                            </div>
-                          )}
-                          {flight.vr && (
-                            <div>
-                              <div className="text-white/60 mb-1">Vᵣ</div>
-                              <div className="font-medium">{flight.vr}</div>
-                            </div>
-                          )}
-                          {flight.v2 && (
-                            <div>
-                              <div className="text-white/60 mb-1">V₂</div>
-                              <div className="font-medium">{flight.v2}</div>
-                            </div>
-                          )}
-                          {flight.toga && (
-                            <div>
-                              <div className="text-white/60 mb-1">TOGA</div>
-                              <div className="font-medium">Yes</div>
-                            </div>
-                          )}
+                      {flight.callsign && (
+                        <div>
+                          <span className="text-white/60">Callsign: </span>
+                          <span className="font-medium">{flight.callsign}</span>
                         </div>
                       )}
-
-                      {/* Landing Group */}
-                      {(flight.landingRunway || flight.star || flight.vapp) && (
-                        <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 sm:border-l sm:border-white/5 sm:pl-6 pt-4 sm:pt-0 border-t sm:border-t-0 border-white/5">
-                          {flight.landingRunway && (
-                            <div>
-                              <div className="text-white/60 mb-1">LDG Runway</div>
-                              <div className="font-medium">{flight.landingRunway}</div>
-                            </div>
-                          )}
-                          {flight.star && (
-                            <div>
-                              <div className="text-white/60 mb-1">STAR</div>
-                              <div className="font-medium">{flight.star}</div>
-                            </div>
-                          )}
-                          {flight.vapp && (
-                            <div>
-                              <div className="text-white/60 mb-1">Vₐₚₚ</div>
-                              <div className="font-medium">{flight.vapp}</div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Misc Group (Cruise Altitude, Block Time, Block Fuel, Passengers, Cargo) */}
-                      {(flight.cruiseAltitude || flight.blockTime || flight.blockFuel !== null || flight.passengers !== null || flight.cargo !== null) && (
-                        <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 sm:border-l sm:border-white/5 sm:pl-6 pt-4 sm:pt-0 border-t sm:border-t-0 border-white/5">
-                          {flight.cruiseAltitude && (
-                            <div>
-                              <div className="text-white/60 mb-1">Cruise Altitude</div>
-                              <div className="font-medium">
-                                {flight.cruiseAltitude.toUpperCase().startsWith("FL") 
-                                  ? flight.cruiseAltitude 
-                                  : `FL${flight.cruiseAltitude}`}
-                              </div>
-                            </div>
-                          )}
-                          {flight.blockTime && (
-                            <div>
-                              <div className="text-white/60 mb-1">Block Time</div>
-                              <div className="font-medium">{flight.blockTime}</div>
-                            </div>
-                          )}
-                          {flight.blockFuel !== null && (
-                            <div>
-                              <div className="text-white/60 mb-1">Block Fuel</div>
-                              <div className="font-medium">{flight.blockFuel} lbs</div>
-                            </div>
-                          )}
-                          {flight.passengers !== null && (
-                            <div>
-                              <div className="text-white/60 mb-1">Passengers</div>
-                              <div className="font-medium">{flight.passengers}</div>
-                            </div>
-                          )}
-                          {flight.cargo !== null && (
-                            <div>
-                              <div className="text-white/60 mb-1">Cargo</div>
-                              <div className="font-medium">{flight.cargo} kg</div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                      </div>
-
-                      {/* Route */}
-                      {flight.route && (
-                        <div className="border-t border-white/5 pt-4">
-                          <div className="text-white/60 mb-1">Route</div>
-                          <div className="font-medium">{flight.route}</div>
+                      {flight.airframe && (
+                        <div>
+                          <span className="text-white/60">Airframe: </span>
+                          <span className="font-medium">{flight.airframe}</span>
                         </div>
                       )}
                     </div>
 
-                    {/* Right column: Map */}
-                    {flight.departure && flight.arrival && (
-                      <div className="lg:w-64 lg:flex-shrink-0 lg:self-stretch">
-                        <FlightMap
-                          departure={flight.departure}
-                          arrival={flight.arrival}
-                          route={flight.route}
-                          className="w-full h-48 lg:h-full"
-                        />
+                    {/* Takeoff Info */}
+                    {(flight.takeoffRunway || flight.sid) && (
+                      <div className="flex flex-wrap gap-x-4 gap-y-1">
+                        {flight.takeoffRunway && (
+                          <div>
+                            <span className="text-white/60">TO Runway: </span>
+                            <span className="font-medium">{flight.takeoffRunway}</span>
+                          </div>
+                        )}
+                        {flight.sid && (
+                          <div>
+                            <span className="text-white/60">SID: </span>
+                            <span className="font-medium">{flight.sid}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Landing Info */}
+                    {(flight.landingRunway || flight.star) && (
+                      <div className="flex flex-wrap gap-x-4 gap-y-1">
+                        {flight.landingRunway && (
+                          <div>
+                            <span className="text-white/60">LDG Runway: </span>
+                            <span className="font-medium">{flight.landingRunway}</span>
+                          </div>
+                        )}
+                        {flight.star && (
+                          <div>
+                            <span className="text-white/60">STAR: </span>
+                            <span className="font-medium">{flight.star}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Flight Stats */}
+                    <div className="flex flex-wrap gap-x-4 gap-y-1">
+                      {flight.cruiseAltitude && (
+                        <div>
+                          <span className="text-white/60">Cruise: </span>
+                          <span className="font-medium">
+                            {flight.cruiseAltitude.toUpperCase().startsWith("FL") 
+                              ? flight.cruiseAltitude 
+                              : `FL${flight.cruiseAltitude}`}
+                          </span>
+                        </div>
+                      )}
+                      {flight.blockTime && (
+                        <div>
+                          <span className="text-white/60">Block Time: </span>
+                          <span className="font-medium">{flight.blockTime}</span>
+                        </div>
+                      )}
+                      {flight.blockFuel !== null && (
+                        <div>
+                          <span className="text-white/60">Fuel: </span>
+                          <span className="font-medium">{flight.blockFuel} lbs</span>
+                        </div>
+                      )}
+                      {flight.passengers !== null && (
+                        <div>
+                          <span className="text-white/60">Pax: </span>
+                          <span className="font-medium">{flight.passengers}</span>
+                        </div>
+                      )}
+                      {flight.cargo !== null && (
+                        <div>
+                          <span className="text-white/60">Cargo: </span>
+                          <span className="font-medium">{flight.cargo} kg</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Route */}
+                    {flight.route && (
+                      <div className="pt-2 border-t border-white/5">
+                        <div className="text-white/60 mb-0.5">Route</div>
+                        <div className="font-medium text-xs break-words">{flight.route}</div>
                       </div>
                     )}
                   </div>
+
+                  {/* Map below */}
+                  {flight.departure && flight.arrival && (
+                    <div className="mt-3 pt-3 border-t border-white/5">
+                      <FlightMap
+                        departure={flight.departure}
+                        arrival={flight.arrival}
+                        route={flight.route}
+                        className="w-full h-40"
+                      />
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
