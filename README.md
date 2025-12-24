@@ -1,119 +1,47 @@
-# Logbook - Flight Simulator Logging Platform
+# Logbook
 
-A sleek, minimalistic social network platform for flight simulator enthusiasts to log, track, and share their virtual flights.
+A modern flight simulator logging platform built for the aviation community. Track your virtual flights and connect with other flight simulator enthusiasts.
+
+## Overview
+
+Logbook is a comprehensive digital logbook designed specifically for flight simulator pilots. Whether you're flying commercial airliners, general aviation, or military aircraft, Logbook helps you document your virtual aviation journey with precision and style.
 
 ## Features
 
-- **Passwordless Authentication**: Email-based magic link authentication using BetterAuth
-- **Detailed Flight Logging**: Track every aspect of your flights across 4 phases:
-  - General (aircraft, callsign, departure/arrival, route, fuel)
-  - Takeoff (runway, SID, V-speeds, TOGA, flaps)
-  - Landing (runway, STAR, brake settings, VAPP)
-  - Post-Flight (duration, landing rate, time of day, passengers, cargo)
-- **Profile Dashboard**: View your flight statistics including total flights, hours, and miles
-- **Public Flight Sharing**: Share your flights with the community
-- **Minimalistic Design**: Black background with white text for a sleek, professional look
-- **Built with Modern Stack**: Next.js 16, React 19, TypeScript, Tailwind CSS, shadcn/ui
+### Flight Logging
 
-## Tech Stack
+Record comprehensive flight information across four distinct phases:
 
-- **Framework**: Next.js 16 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS 4
-- **UI Components**: shadcn/ui
-- **Authentication**: BetterAuth
-- **Database**: Neon (PostgreSQL)
-- **Form Handling**: React Hook Form + Zod
+- **General Information**: Aircraft type, callsign, airframe registration, departure/arrival airports, route, cruise altitude, and fuel consumption
+- **Takeoff Details**: Runway, SID (Standard Instrument Departure), V-speeds (V₁, Vᵣ, V₂), TOGA usage, and flap settings
+- **Landing Information**: Runway, STAR (Standard Terminal Arrival Route), brake settings, Vₐₚₚ, and landing rating
+- **Post-Flight Data**: Air time, block time, landing quality, time of day, passengers, cargo, and route distance
+
+### Flight Statistics Dashboard
+
+Monitor your aviation progress with real-time statistics:
+
+- Total flights logged
+- Total hours flown (calculated from block time)
+- Total miles traveled (sum of route distances)
+- Visual overview of your flight history
+
+### Community 
+
+- **Public Flight Sharing**: Share your flights with the community and showcase your virtual aviation adventures
+- **Community Flights**: Discover flights from other pilots, get inspired for your next journey, and see what routes others are flying
+- **Public Profiles**: Create a public profile showcasing your flight statistics and public flight logs
+- **User Discovery**: Browse and explore other pilots' public flight logs and statistics
 
 ## Getting Started
 
-### Prerequisites
+Ready to start logging your flights? 
 
-- Node.js 20+ 
-- A Neon database account
-- npm or yarn
+1. **Create an Account**: Sign up with your email address (no password required - we use one-time codes) and choose a username
+2. **Log Your First Flight**: Click "Add Flight" and fill in the details across the General, Takeoff, Landing, and Post-Flight tabs
+3. **Track Your Progress**: View your statistics and flight history on your dashboard
+4. **Share with Community**: Make flights public to share with other pilots and discover new routes
 
-### Installation
+---
 
-1. Clone the repository:
-```bash
-git clone <your-repo-url>
-cd logbook
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Set up environment variables:
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and add your configuration:
-```env
-DATABASE_URL=postgresql://user:password@host:5432/database
-BETTER_AUTH_URL=http://localhost:3000
-BETTER_AUTH_SECRET=your-random-secret-here
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-```
-
-4. Set up the database:
-   - Create a new database in Neon
-   - Run the migration SQL from `src/lib/db/migrations.sql` in your Neon SQL editor
-
-5. Run the development server:
-```bash
-npm run dev
-```
-
-6. Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## Project Structure
-
-```
-logbook/
-├── src/
-│   ├── app/              # Next.js app router pages
-│   │   ├── api/          # API routes
-│   │   ├── login/        # Login page
-│   │   ├── register/     # Registration page
-│   │   ├── profile/      # User profile page
-│   │   └── public/       # Public flights page
-│   ├── components/       # React components
-│   │   ├── ui/           # shadcn/ui components
-│   │   ├── AddFlightDialog.tsx
-│   │   └── FlightCard.tsx
-│   └── lib/              # Utilities and configurations
-│       ├── auth.ts       # BetterAuth configuration
-│       └── db/           # Database queries and schema
-└── public/               # Static assets
-```
-
-## Database Schema
-
-The application uses two main tables:
-
-- **users**: Stores user account information
-- **flights**: Stores detailed flight log entries
-
-See `src/lib/db/migrations.sql` for the complete schema.
-
-## Authentication
-
-The app uses BetterAuth with passwordless email authentication (magic links). In development, magic links are logged to the console. In production, you'll need to configure an email service (e.g., Resend) in the `sendVerificationEmail` function in `src/lib/auth.ts`.
-
-## Future Enhancements
-
-- [ ] Map visualization with Mapbox showing flight routes
-- [ ] Upload and map exact flight data points
-- [ ] Advanced statistics dashboard (CO2 emissions, times around Earth, etc.)
-- [ ] Pie charts for flight categories
-- [ ] User following and social features
-- [ ] Flight comments and interactions
-- [ ] Export flight logs to PDF/CSV
-
-## License
-
-MIT
+© 2025 Dan Glorioso. All rights reserved.
