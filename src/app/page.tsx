@@ -20,6 +20,7 @@ import { AnimatedPlane } from "@/components/AnimatedPlane";
 import { Navigation } from "@/components/Navigation";
 import { AddFlightDialog } from "@/components/AddFlightDialog";
 import { FlightCard } from "@/components/FlightCard";
+import { FlightMap } from "@/components/FlightMap";
 import Footer from "@/components/Footer";
 import { FlightCardSkeleton } from "@/components/skeletons/FlightCardSkeleton";
 import { StatsSkeleton } from "@/components/skeletons/StatsSkeleton";
@@ -260,6 +261,18 @@ function LandingPage() {
                           </div>
                         )}
                       </div>
+
+                      {/* Map */}
+                      {flight.departure && flight.arrival && (
+                        <div className="mt-4 pt-4 border-t border-white/5">
+                          <FlightMap
+                            departure={flight.departure}
+                            arrival={flight.arrival}
+                            route={flight.route}
+                            className="w-full h-48"
+                          />
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 ))}
