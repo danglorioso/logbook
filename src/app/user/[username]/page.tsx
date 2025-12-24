@@ -179,7 +179,7 @@ export default function UserProfilePage() {
           </Card>
           <Card className="bg-[#0a0a0a] border-white/10">
             <CardHeader>
-              <CardTitle className="text-sm text-white/60">Total Miles</CardTitle>
+              <CardTitle className="text-sm text-white/60">Total Nautical Miles</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{stats.totalMiles.toLocaleString()}</div>
