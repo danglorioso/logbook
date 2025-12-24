@@ -639,29 +639,22 @@ function DashboardContent() {
                 </Select>
               </div>
             )}
-
-            {/* Clear Filters Button */}
-            {hasActiveFilters && (
-              <div className="flex-1 sm:flex-initial">
-                <Label className="text-sm text-white/60 mb-2 block opacity-0">
-                  Clear
-                </Label>
-                <Button
-                  variant="outline"
-                  onClick={clearFilters}
-                  className="w-full sm:w-auto border-white/30 text-white hover:bg-white/10 hover:border-white/50"
-                >
-                  <X className="h-4 w-4 mr-2" />
-                  Clear Filters
-                </Button>
-              </div>
-            )}
           </div>
 
-          {/* Results Count */}
+          {/* Results Count and Clear Filters */}
           {hasActiveFilters && (
-            <div className="text-sm text-white/60 mt-3">
-              Showing {filteredFlights.length} of {flights.length} flights
+            <div className="flex items-center justify-between mt-3">
+              <div className="text-sm text-white/60">
+                Showing {filteredFlights.length} of {flights.length} flights
+              </div>
+              <Button
+                variant="outline"
+                onClick={clearFilters}
+                className="border-white/30 text-white hover:bg-white/10 hover:border-white/50"
+              >
+                <X className="h-4 w-4 mr-2" />
+                Clear Filters
+              </Button>
             </div>
           )}
         </div>
