@@ -236,7 +236,11 @@ function LandingPage() {
                           {flight.cruiseAltitude && (
                             <div>
                               <div className="text-white/60 text-xs mb-1">Cruise Altitude</div>
-                              <div className="font-medium">{flight.cruiseAltitude}</div>
+                              <div className="font-medium">
+                                {flight.cruiseAltitude.toUpperCase().startsWith("FL") 
+                                  ? flight.cruiseAltitude 
+                                  : `FL${flight.cruiseAltitude}`}
+                              </div>
                             </div>
                           )}
                           {flight.blockFuel !== null && (

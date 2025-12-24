@@ -317,8 +317,12 @@ export default function UserProfilePage() {
                         <div className="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 sm:border-l sm:border-white/5 sm:pl-6 pt-4 sm:pt-0 border-t sm:border-t-0 border-white/5">
                           {flight.cruiseAltitude && (
                             <div>
-                              <div className="text-white/60 mb-1">CRZ FL</div>
-                              <div className="font-medium">{flight.cruiseAltitude}</div>
+                              <div className="text-white/60 mb-1">Cruise Altitude</div>
+                              <div className="font-medium">
+                                {flight.cruiseAltitude.toUpperCase().startsWith("FL") 
+                                  ? flight.cruiseAltitude 
+                                  : `FL${flight.cruiseAltitude}`}
+                              </div>
                             </div>
                           )}
                           {flight.blockTime && (
